@@ -1,0 +1,1539 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content https://ckm.salut.gencat.cat/ckm/</title>
+    <!-- BoxIcons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+		html{
+			min-height:100vh;
+			height: 100vh;
+			padding: 0px;
+			margin: 0px;
+           
+		}
+	
+        body {
+			font: 10pt arial;
+			min-height:100vh;
+			height: 100vh;
+            overflow: hidden;
+        }
+
+        #mainContent {
+            display: flex;
+			height:100%;
+            flex-grow: 1;
+            position: relative;
+			/*border: 1px solid #ccc;*/
+            
+        }
+
+        #network {
+            flex-grow: 1;
+            height: 100%;
+            width: 100%;
+            position: relative;
+			z-index: 1;
+            /* box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5); */
+			/* border: 1px solid #ccc; */
+            background-color: white;
+        }
+
+        #headerOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 500px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            text-align: left;
+            z-index: 2;
+            pointer-events: none;
+            border-radius: 20pt;
+			/*  border: 1px solid #ccc; */
+        }
+		
+		 #infoOverlay {
+            position: absolute;
+            top: 90%;
+            left: 0;
+            width: 300px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            text-align: left;
+            z-index: 2;
+            /*pointer-events: none;*/
+            border-radius: 20pt;
+			/*  border: 1px solid #ccc; */
+        }
+
+        #configuration {
+            width: 320px;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            transition: 0.2s;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+        }
+        #configuration.collapsed {
+            width: 0;
+            padding: 20px 0;
+            overflow: hidden;
+        }
+
+       
+
+        /* Flag styles */
+        .flag {
+            position: fixed;
+            top: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: rgb(165, 2, 2);  
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: 0.2s;
+            font-size: 28px;
+            z-index: 5;
+        }
+
+        .right.flag{
+            right: 345px;
+        }
+
+        .right.flag.collapsed {
+            right: 0;
+            border-radius: 5px 0 0 5px;
+        }
+
+    </style>
+	
+	<script>
+	var options = {
+        edges: {
+          width: 5,
+          font: {
+            size: 12,
+            color: "#C9C9C9",
+          },
+          arrows: {
+            to: {
+              enabled: false,
+              scaleFactor: 1,
+              type: 'arrow'
+            },
+            middle: {
+              enabled: false,
+              scaleFactor: 1,
+              type: 'arrow'
+            },
+            from: {
+              enabled: false,
+              scaleFactor: 1,
+              type: 'circle'
+            }
+          },
+          scaling: {
+            label: true,
+          },
+          dashes: false,
+          shadow: false,
+          smooth: false,
+          color: {
+            color: "#828282",
+            highlight: "#D93E3E"
+          },
+          background: {
+            enabled: false,
+            color: "#00ff00",
+          },
+        },
+        nodes: {
+			//shape: "dot",
+			//shape: "ellipse",
+			//shape: "box",
+			//borderWidth: 2,
+			shape: "box",
+			//size: 50,
+			//font: {
+			//  size: 24,
+			//  color: "#000000"
+			//}
+        },
+        groups: {
+          DOMAIN: {
+            borderWidth: 2,
+            shape: "box",
+            size: 50,
+            font: {
+              size: 30,
+              color: "#000000"
+            }
+          },
+          PROJECT: {
+            borderWidth: 2,
+            shape: "box",
+            size: 30,
+            font: {
+              size: 30,
+              color: "#000000"
+            }
+          },
+          ARCHETYPE: {
+            borderWidth: 2,
+            shape: "box",
+            size: 30,
+            font: {
+              size: 30,
+              color: "#000000"
+            }
+          },
+          TEMPLATE: {
+            borderWidth: 2,
+            shape: "box",
+            size: 30,
+            font: {
+              size: 30,
+              color: "#000000"
+            }
+          }
+        },
+         physics: {
+          forceAtlas2Based: {
+            gravitationalConstant: -2500, // the amount of gravitation that draws nodes together (negative: they thry to escape from each other)
+            centralGravity: 0.005, // gravity toward center
+            springLength: 100,
+            springConstant: 0.018,
+          },
+          maxVelocity: 146,
+          solver: "forceAtlas2Based",
+          timestep: 0.35,
+          stabilization: {
+            iterations: 15
+          },
+        },
+      };
+
+	  
+		</script>
+	
+</head>
+<body>
+
+    <div id="mainContent">
+        
+            <div id="headerOverlay">
+                    <h1>https://ckm.salut.gencat.cat/ckm/</h1>
+                    <p style="font-size:120%;color:red;">For demonstration purposes only! Will not be updated.</p>
+					<p>Public repository only!<br>
+					State: 16/12/2024. Domains: 14, Projects: 13, Archetypes: 168, Templates: 39. </p>
+			</div>
+			
+			<div id="infoOverlay">
+                <p>(c) 2024, CatSalut. Servei Català de la Salut 
+				<br>
+				License: <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>
+				</p>
+            </div>
+			
+				<div id="network">
+        </div>
+        <div id="configuration" class="collapsed">
+            <h2>OPTIONS</h2>
+			<hr>
+			<h3>Configuration</h3>
+			
+			<input type="checkbox" id="smoothToggle"  onclick="toggleSmooth()"> Smooth edges<br><br>
+			
+            <input type="checkbox" id="physicsToggle" checked onclick="togglePhysics()"> Enable physics<br><br>
+
+            <label for="repulsion">Gravitational constant:</label>
+            <input type="range" id="repulsion" min="-10000" max="0" value="-2500" oninput="updatePhysics()">
+			<span id="repulsionValue">-2500</span>
+			<br><br>
+
+            <label for="centralGravity">Central gravity:</label>
+            <input type="range" id="centralGravity" min="0" max="0.1" step="0.0001" value="0.005" oninput="updatePhysics()">
+			<span id="centralGravityValue">0.005</span>
+			<br><br>
+			
+			<label for="springLength">Spring length:</label>
+            <input type="range" id="springLength" min="1" max="500" step="1" value="100" oninput="updatePhysics()">
+			<span id="springLengthValue">100</span>
+			<br><br>
+			
+			<label for="springConstant">Spring constant:</label>
+            <input type="range" id="springConstant" min="0.001" max="0.1" step="0.001" value="0.018" oninput="updatePhysics()">
+			<span id="springConstantValue">0.018</span>
+			<br><br>
+			
+			<hr>
+			<h3>Shortcuts</h3>
+			
+			<p>Select a domain, project, template or archetype to jump to it.</p>
+			
+			<label for="domainSelect">Select a domain:</label>
+            <select id="domainSelect">
+                <option value="">-- Select a Domain --</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+            <br><br>
+			
+            <label for="projectSelect">Select a project:</label>
+            <select id="projectSelect">
+                <option value="">-- Select a Project --</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+            <br><br>
+			
+			<label for="templateSelect">Select a template:</label>
+            <select id="templateSelect">
+                <option value="">-- Select a Template --</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+            <br><br>
+ 
+            <label for="archetypeSelect">Select an archetype:</label>
+            <select id="archetypeSelect">
+                <option value="">-- Select an Archetype --</option>
+                <!-- Options will be populated dynamically -->
+            </select>
+            <br><br>
+ 
+        </div>
+    </div>
+
+
+    <div class="flag right collapsed" id="flagRight"><i class='bx bx-cog' ></i></div>
+
+
+    <script>
+        // JavaScript for collapsing and expanding sidebar
+        const sidebarRight = document.getElementById('configuration');
+        const flagRight = document.getElementById('flagRight');
+
+        flagRight.addEventListener('click', function() {
+            // Toggle the collapsed class on both the sidebar and flag
+            sidebarRight.classList.toggle('collapsed');
+            flagRight.classList.toggle('collapsed');
+        });
+
+
+		var nodesOrigin =
+[{'id': 'dom0', 'label': 'Subdomain:\nAl·lèrgies i Reaccions adverses (AiR)', 'title': 'Al·lèrgies i Reaccions adverses (AiR)\ncid: 1380.172.7', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom1', 'label': 'Subdomain:\nBanc de Sang i Teixits', 'title': 'Banc de Sang i Teixits\ncid: 1380.172.16', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom2', 'label': 'Subdomain:\nCKM internacional', 'title': 'CKM internacional\ncid: 1380.172.3', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom3', 'label': 'Subdomain:\nCMDIC', 'title': 'CMDIC\ncid: 1380.172.14', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom4', 'label': 'Subdomain:\nHighMED', 'title': 'HighMED\ncid: 1380.172.12', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom5', 'label': 'Subdomain:\nHistòria Clínica Compartida', 'title': 'Història Clínica Compartida\ncid: 1380.172.6', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom6', 'label': 'Subdomain:\nImmunitzacions', 'title': 'Immunitzacions\ncid: 1380.172.8', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom7', 'label': 'Subdomain:\nInitial Subdomain', 'title': 'Initial Subdomain\ncid: 1380.172.1', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom8', 'label': 'Subdomain:\nMedicina Personalitzada i de Precisió (MPP)', 'title': 'Medicina Personalitzada i de Precisió (MPP)\ncid: 1380.172.11', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom9', 'label': 'Subdomain:\nOncologia', 'title': 'Oncologia\ncid: 1380.172.9', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom10', 'label': 'Subdomain:\nPRESCRIPCIO', 'title': 'PRESCRIPCIO\ncid: 1380.172.15', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom11', 'label': 'Subdomain:\nPla Terapèutic Ùnic', 'title': 'Pla Terapèutic Ùnic\ncid: 1380.172.4', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom12', 'label': 'Subdomain:\nProcés Obstètric', 'title': 'Procés Obstètric\ncid: 1380.172.10', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'dom13', 'label': 'Subdomain:\nSEGUIMENT', 'title': 'SEGUIMENT\ncid: 1380.172.13', 'group': 'DOMAIN', color: {background: '#9F9F9F', border: '#414141', highlight: {background: '#D8D8D8', border: '#D93E3E'}}},
+ {'id': 'proj0', 'label': 'PROJECT:\nAdmin Salut', 'title': 'Admin Salut\ncid: 1380.153.6\nsubdomain: Initial Subdomain\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj1', 'label': 'INCUBATOR:\nAl·lèrgies i Reaccions adverses (AiR)', 'title': 'Al·lèrgies i Reaccions adverses (AiR)\ncid: 1380.153.9\nsubdomain: Al·lèrgies i Reaccions adverses (AiR)\nprojectType: INCUBATOR\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj2', 'label': 'PROJECT:\nArquetips remots (internacional)', 'title': 'Arquetips remots (internacional)\ncid: 1380.153.5\nsubdomain: CKM internacional\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj3', 'label': 'PROJECT:\nArquetips remots HighMED', 'title': 'Arquetips remots HighMED\ncid: 1380.153.14\nsubdomain: HighMED\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj4', 'label': 'INCUBATOR:\nBanc de Sang i Teixits', 'title': 'Banc de Sang i Teixits\ncid: 1380.153.24\nsubdomain: Banc de Sang i Teixits\nprojectType: INCUBATOR\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj5', 'label': 'PROJECT:\nClinical Context', 'title': 'Clinical Context\ncid: 1380.153.19\nsubdomain: Initial Subdomain\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj6', 'label': 'INCUBATOR:\nCondicionants i Problemes', 'title': 'Condicionants i Problemes\ncid: 1380.153.18\nsubdomain: SEGUIMENT\nprojectType: INCUBATOR\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj7', 'label': 'INCUBATOR:\nCurs Clínic', 'title': 'Curs Clínic\ncid: 1380.153.17\nsubdomain: SEGUIMENT\nprojectType: INCUBATOR\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj8', 'label': 'PROJECT:\nHC3', 'title': 'HC3\ncid: 1380.153.8\nsubdomain: Història Clínica Compartida\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj9', 'label': 'PROJECT:\nImmunitzacions E2E', 'title': 'Immunitzacions E2E\ncid: 1380.153.10\nsubdomain: Immunitzacions\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj10', 'label': 'PROJECT:\nInitial Project', 'title': 'Initial Project\ncid: 1380.153.1\nsubdomain: Initial Subdomain\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj11', 'label': 'PROJECT:\nOncologia de precisió', 'title': 'Oncologia de precisió\ncid: 1380.153.13\nsubdomain: Medicina Personalitzada i de Precisió (MPP)\nprojectType: PROJECT\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'proj12', 'label': 'INCUBATOR:\nProcés Obstètric (PROBS)', 'title': 'Procés Obstètric (PROBS)\ncid: 1380.153.12\nsubdomain: Procés Obstètric\nprojectType: INCUBATOR\npublic: true', 'group':'PROJECT', color: {background: '#FF4949', border: '#651D1D', highlight: {background: '#FFB1B1', border: '#D93E3E'}}},
+ {'id': 'arch0', 'label': 'Archetype:\nVaccination list\n...\nCOMPOSITION.vaccination_list.v0', 'title': 'Vaccination list\nopenEHR-EHR-COMPOSITION.vaccination_list.v0\ncid: 1380.146.84\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-03-12T08:26:41+01:00\nmodificationTime: 2024-03-12T08:26:41+01:00\nuid: 7a89512f-4d71-4795-aee6-0d92330a0955', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch1', 'label': 'Archetype:\nGestió de la medicació\n...\nACTION.medication.v1', 'title': 'Gestió de la medicació\nopenEHR-EHR-ACTION.medication.v1\ncid: 1380.146.85\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.3.0\nrevisionLatest: 1.3.0\ncreationTime: 2024-03-12T08:26:42+01:00\nmodificationTime: 2024-08-28T08:17:59+02:00\nuid: 0033ab5c-cde0-4402-8b64-d30c188adf79', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch2', 'label': 'Archetype:\nMedication details\n...\nCLUSTER.medication.v2', 'title': 'Medication details\nopenEHR-EHR-CLUSTER.medication.v2\ncid: 1380.146.86\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 2.0.1\nrevisionLatest: 2.0.1\ncreationTime: 2024-03-12T08:26:44+01:00\nmodificationTime: 2024-03-12T08:26:44+01:00\nuid: b222a76b-6f91-4e78-b669-0d776747a789', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch3', 'label': 'Archetype:\nVaccination list\n...\nSECTION.immunisation_list.v0', 'title': 'Vaccination list\nopenEHR-EHR-SECTION.immunisation_list.v0\ncid: 1380.146.87\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-03-12T08:26:45+01:00\nmodificationTime: 2024-03-12T08:26:45+01:00\nuid: b48f667c-03fe-4c38-b817-cc18cbefb4db', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch4', 'label': 'Archetype:\nAdmin Salut\n...\nCLUSTER.admin_salut.v0', 'title': 'Admin Salut\nopenEHR-EHR-CLUSTER.admin_salut.v0\ncid: 1380.146.88\nproject: Admin Salut\nstatus: TEAMREVIEW\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-03-12T08:30:42+01:00\nmodificationTime: 2024-10-29T10:28:36+01:00\nuid: b9e0b28c-6d5c-440d-b78d-3c4dfdbfe30b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch5', 'label': 'Archetype:\nMetadades XDS\n...\nCLUSTER.xds_metadata.v0', 'title': 'Metadades XDS\nopenEHR-EHR-CLUSTER.xds_metadata.v0\ncid: 1380.146.89\nproject: Admin Salut\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-03-12T08:31:27+01:00\nmodificationTime: 2024-03-12T08:31:27+01:00\nuid: 9ccea198-de2e-4745-bc76-61a7b24f7446', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch6', 'label': 'Archetype:\nMotiu edicio registre\n...\nCLUSTER.motiu_edicio_de_registre.v0', 'title': 'Motiu edicio registre\nopenEHR-EHR-CLUSTER.motiu_edicio_de_registre.v0\ncid: 1380.146.91\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-18T15:44:43+02:00\nmodificationTime: 2024-04-18T15:44:43+02:00\nuid: eeae3e39-d586-4da3-9a3d-22eead6e11d0', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch7', 'label': 'Archetype:\nSymptom/Sign\n...\nCLUSTER.symptom_sign.v2', 'title': 'Symptom/Sign\nopenEHR-EHR-CLUSTER.symptom_sign.v2\ncid: 1380.146.92\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.1.2\nrevisionLatest: 2.1.2\ncreationTime: 2024-04-19T12:10:51+02:00\nmodificationTime: 2024-11-27T08:38:25+01:00\nuid: 88c7d677-fa69-498f-aec2-976c53d15a6f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch8', 'label': 'Archetype:\nExclusion - global\n...\nEVALUATION.exclusion_global.v1', 'title': 'Exclusion - global\nopenEHR-EHR-EVALUATION.exclusion_global.v1\ncid: 1380.146.93\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.4\nrevisionLatest: 1.1.4\ncreationTime: 2024-04-19T12:10:52+02:00\nmodificationTime: 2024-04-19T12:10:52+02:00\nuid: 4fe94967-5791-4094-9547-e2a4a8c61f15', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch9', 'label': 'Archetype:\nProblem/Diagnosis screening questionnaire\n...\nOBSERVATION.problem_screening.v1', 'title': 'Problem/Diagnosis screening questionnaire\nopenEHR-EHR-OBSERVATION.problem_screening.v1\ncid: 1380.146.94\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.4\nrevisionLatest: 1.0.4\ncreationTime: 2024-04-19T12:10:54+02:00\nmodificationTime: 2024-06-19T10:42:37+02:00\nuid: 0b3c1c52-b958-452c-aa36-a7ab17d309a2', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch10', 'label': 'Archetype:\nAdverse reaction event\n...\nCLUSTER.adverse_reaction_event.v1', 'title': 'Adverse reaction event\nopenEHR-EHR-CLUSTER.adverse_reaction_event.v1\ncid: 1380.146.95\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.0\nrevisionLatest: 1.0.0\ncreationTime: 2024-04-19T12:10:55+02:00\nmodificationTime: 2024-04-19T12:10:55+02:00\nuid: 6b7ebf69-5b6d-4582-9036-e56f940f0a69', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch11', 'label': 'Archetype:\nMedication list\n...\nSECTION.medication_list.v0', 'title': 'Medication list\nopenEHR-EHR-SECTION.medication_list.v0\ncid: 1380.146.96\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-19T12:10:56+02:00\nmodificationTime: 2024-04-19T12:10:56+02:00\nuid: a6a9df29-a1b7-4445-a2e7-596b0a71d3a4', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch12', 'label': 'Archetype:\nAbsence of information\n...\nEVALUATION.absence.v2', 'title': 'Absence of information\nopenEHR-EHR-EVALUATION.absence.v2\ncid: 1380.146.97\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.2\nrevisionLatest: 2.0.2\ncreationTime: 2024-04-19T12:10:57+02:00\nmodificationTime: 2024-11-27T08:38:27+01:00\nuid: f5adea69-7b6c-4f99-968d-a8e33a7e2f63', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch13', 'label': 'Archetype:\nTiming - daily\n...\nCLUSTER.timing_daily.v1', 'title': 'Timing - daily\nopenEHR-EHR-CLUSTER.timing_daily.v1\ncid: 1380.146.98\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.1\nrevisionLatest: 1.0.1\ncreationTime: 2024-04-19T12:10:58+02:00\nmodificationTime: 2024-04-19T12:10:58+02:00\nuid: 09372f17-b21c-4110-b892-085e1c9ea04d', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch14', 'label': 'Archetype:\nAd hoc heading\n...\nSECTION.adhoc.v1', 'title': 'Ad hoc heading\nopenEHR-EHR-SECTION.adhoc.v1\ncid: 1380.146.99\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.8\nrevisionLatest: 1.0.8\ncreationTime: 2024-04-19T12:10:59+02:00\nmodificationTime: 2024-04-19T12:10:59+02:00\nuid: a82233b9-7f2d-4dd5-8db4-37f6963cfd8c', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch15', 'label': 'Archetype:\nAnatomical location\n...\nCLUSTER.anatomical_location.v1', 'title': 'Anatomical location\nopenEHR-EHR-CLUSTER.anatomical_location.v1\ncid: 1380.146.100\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.3.1\nrevisionLatest: 1.3.1\ncreationTime: 2024-04-19T12:11:01+02:00\nmodificationTime: 2024-12-11T08:38:23+01:00\nuid: 2fe9e9f8-adfd-4406-878a-82b38ef498a9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch16', 'label': 'Archetype:\nAdverse reaction list\n...\nCOMPOSITION.adverse_reaction_list.v1', 'title': 'Adverse reaction list\nopenEHR-EHR-COMPOSITION.adverse_reaction_list.v1\ncid: 1380.146.101\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.3\nrevisionLatest: 1.1.3\ncreationTime: 2024-04-19T12:11:02+02:00\nmodificationTime: 2024-04-19T12:11:02+02:00\nuid: d4b9bd3d-28b1-4245-bee3-100d0f58b5c8', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch17', 'label': 'Archetype:\nAdverse reaction risk\n...\nEVALUATION.adverse_reaction_risk.v2', 'title': 'Adverse reaction risk\nopenEHR-EHR-EVALUATION.adverse_reaction_risk.v2\ncid: 1380.146.102\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.0\nrevisionLatest: 2.0.0\ncreationTime: 2024-04-19T12:11:03+02:00\nmodificationTime: 2024-04-19T12:11:03+02:00\nuid: 6c812c8c-ca00-496a-97dd-6e4916bd1ccf', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch18', 'label': 'Archetype:\nDosage\n...\nCLUSTER.dosage.v2', 'title': 'Dosage\nopenEHR-EHR-CLUSTER.dosage.v2\ncid: 1380.146.103\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.2\nrevisionLatest: 2.0.2\ncreationTime: 2024-04-19T12:11:04+02:00\nmodificationTime: 2024-04-19T12:11:04+02:00\nuid: 938dd9db-f631-4df2-9221-07aeadac7917', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch19', 'label': 'Archetype:\nAdverse reaction list\n...\nSECTION.adverse_reaction_list.v0', 'title': 'Adverse reaction list\nopenEHR-EHR-SECTION.adverse_reaction_list.v0\ncid: 1380.146.104\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-19T12:18:33+02:00\nmodificationTime: 2024-04-19T12:18:33+02:00\nuid: 8da74725-31e4-45ce-809a-ef588652e187', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch20', 'label': 'Archetype:\nCare plan request\n...\nINSTRUCTION.care_plan_request.v0', 'title': 'Care plan request\nopenEHR-EHR-INSTRUCTION.care_plan_request.v0\ncid: 1380.146.105\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-22T10:35:06+02:00\nmodificationTime: 2024-04-22T10:35:06+02:00\nuid: f5e8b3e2-a22c-454d-b39c-c5ff2adc7875', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch21', 'label': 'Archetype:\nClinical synopsis\n...\nEVALUATION.clinical_synopsis.v1', 'title': 'Clinical synopsis\nopenEHR-EHR-EVALUATION.clinical_synopsis.v1\ncid: 1380.146.106\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.3\nrevisionLatest: 1.0.3\ncreationTime: 2024-04-22T10:35:07+02:00\nmodificationTime: 2024-05-21T12:10:29+02:00\nuid: 87e2704b-955b-43bc-b569-755e06dbd3f5', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch22', 'label': "Archetype:\nTroballes de l'exploració física\n...\nOBSERVATION.exam.v1", 'title': "Troballes de l'exploració física\nopenEHR-EHR-OBSERVATION.exam.v1\ncid: 1380.146.107\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.4\nrevisionLatest: 1.1.4\ncreationTime: 2024-04-22T10:35:09+02:00\nmodificationTime: 2024-04-22T10:35:09+02:00\nuid: 8ec2d367-1d40-4e57-bf8b-4dde81132a64", 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch23', 'label': 'Archetype:\nEncounter\n...\nCOMPOSITION.encounter.v1', 'title': 'Encounter\nopenEHR-EHR-COMPOSITION.encounter.v1\ncid: 1380.146.108\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.8\nrevisionLatest: 1.0.8\ncreationTime: 2024-04-22T10:35:11+02:00\nmodificationTime: 2024-04-22T10:35:11+02:00\nuid: 52fa2b9c-ed55-4821-a300-1150fb382c05', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch24', 'label': 'Archetype:\nConclusion\n...\nSECTION.conclusion.v0', 'title': 'Conclusion\nopenEHR-EHR-SECTION.conclusion.v0\ncid: 1380.146.109\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-22T10:35:12+02:00\nmodificationTime: 2024-04-22T10:35:12+02:00\nuid: f88b94eb-8afe-404b-9ccc-adf79b44b723', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch25', 'label': 'Archetype:\nProblem list\n...\nSECTION.problem_list.v0', 'title': 'Problem list\nopenEHR-EHR-SECTION.problem_list.v0\ncid: 1380.146.110\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-22T10:35:13+02:00\nmodificationTime: 2024-04-22T10:35:13+02:00\nuid: 496598a7-dcfa-45fb-8886-f5b76c2333d9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch26', 'label': 'Archetype:\nProcediment\n...\nACTION.procedure.v1', 'title': 'Procediment\nopenEHR-EHR-ACTION.procedure.v1\ncid: 1380.146.111\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.4.6\nrevisionLatest: 1.4.6\ncreationTime: 2024-04-22T10:35:15+02:00\nmodificationTime: 2024-10-16T08:05:57+02:00\nuid: 82e79f18-76b9-4b5c-a930-1115eecbc4b7', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch27', 'label': 'Archetype:\nService request\n...\nINSTRUCTION.service_request.v1', 'title': 'Service request\nopenEHR-EHR-INSTRUCTION.service_request.v1\ncid: 1380.146.112\nproject: Arquetips remots (internacional)\nstatus: REASSESS_DRAFT\nrevision: 1.1.3-alpha\nrevisionLatest: 1.1.3-alpha\ncreationTime: 2024-04-22T10:35:16+02:00\nmodificationTime: 2024-05-21T12:10:34+02:00\nuid: d7cf88fd-5324-4005-9f1b-d0f4f8e112ba', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch28', 'label': 'Archetype:\nSOAP headings\n...\nSECTION.soap.v0', 'title': 'SOAP headings\nopenEHR-EHR-SECTION.soap.v0\ncid: 1380.146.113\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-04-22T10:35:17+02:00\nmodificationTime: 2024-04-22T10:35:17+02:00\nuid: c4ef831a-deaa-3968-97d9-fb3744e9394e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch29', 'label': 'Archetype:\nReason for encounter\n...\nEVALUATION.reason_for_encounter.v1', 'title': 'Reason for encounter\nopenEHR-EHR-EVALUATION.reason_for_encounter.v1\ncid: 1380.146.114\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-04-22T10:35:19+02:00\nmodificationTime: 2024-04-22T10:35:19+02:00\nuid: 3d268aac-eeb5-4f95-b1a8-1d4dec5d0ae7', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch30', 'label': 'Archetype:\nProblema/Diagnòstic\n...\nEVALUATION.problem_diagnosis.v1', 'title': 'Problema/Diagnòstic\nopenEHR-EHR-EVALUATION.problem_diagnosis.v1\ncid: 1380.146.115\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.4.1\nrevisionLatest: 1.4.1\ncreationTime: 2024-04-22T10:48:49+02:00\nmodificationTime: 2024-09-18T08:17:57+02:00\nuid: cc3a20b3-8928-4c2a-babd-fe9e28987be7', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch31', 'label': 'Archetype:\nProblem list\n...\nCOMPOSITION.problem_list.v2', 'title': 'Problem list\nopenEHR-EHR-COMPOSITION.problem_list.v2\ncid: 1380.146.116\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.2\nrevisionLatest: 2.0.2\ncreationTime: 2024-04-22T15:15:55+02:00\nmodificationTime: 2024-11-27T08:38:29+01:00\nuid: c9cbb493-3a5e-4780-9fc5-9384c49ffcce', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch32', 'label': 'Archetype:\nHealth threads\n...\nCOMPOSITION.health_threads.v0', 'title': 'Health threads\nopenEHR-EHR-COMPOSITION.health_threads.v0\ncid: 1380.146.117\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T11:07:15+02:00\nmodificationTime: 2024-06-03T11:07:15+02:00\nuid: 444c6c5e-10a0-43c9-94a1-265c03b124b8', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch33', 'label': 'Archetype:\nHealth thread\n...\nADMIN_ENTRY.health_thread.v0', 'title': 'Health thread\nopenEHR-EHR-ADMIN_ENTRY.health_thread.v0\ncid: 1380.146.118\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T11:07:45+02:00\nmodificationTime: 2024-06-03T11:07:45+02:00\nuid: a696ae0d-fd02-4fae-b967-ea9631e86574', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch34', 'label': 'Archetype:\nMetadades clíniques\n...\nCLUSTER.clinical_metadata.v0', 'title': 'Metadades clíniques\nopenEHR-EHR-CLUSTER.clinical_metadata.v0\ncid: 1380.146.119\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T12:32:32+02:00\nmodificationTime: 2024-06-03T12:32:32+02:00\nuid: 6ad7d33f-40fb-4796-ad66-a48805669ae5', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch35', 'label': 'Archetype:\nAd hoc CLUSTER\n...\nCLUSTER.ad_hoc_cluster.v0', 'title': 'Ad hoc CLUSTER\nopenEHR-EHR-CLUSTER.ad_hoc_cluster.v0\ncid: 1380.146.120\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T12:39:05+02:00\nmodificationTime: 2024-06-03T12:39:05+02:00\nuid: dab268af-1dac-4552-b93c-633266391da6', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch36', 'label': 'Archetype:\nEstat del registre del pacient\n...\nCLUSTER.patient_record_status.v0', 'title': 'Estat del registre del pacient\nopenEHR-EHR-CLUSTER.patient_record_status.v0\ncid: 1380.146.121\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T12:40:28+02:00\nmodificationTime: 2024-06-03T12:40:28+02:00\nuid: 45996920-6065-4d21-8326-cd479e9c502d', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch37', 'label': 'Archetype:\nAdditional details of the labour\n...\nCLUSTER.type_of_birth.v0', 'title': 'Additional details of the labour\nopenEHR-EHR-CLUSTER.type_of_birth.v0\ncid: 1380.146.122\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T12:41:39+02:00\nmodificationTime: 2024-06-03T12:41:39+02:00\nuid: 7ab14f07-efc2-42b5-8c9d-256fc633c049', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch38', 'label': 'Archetype:\nBirth summary\n...\nEVALUATION.birth_summary.v0', 'title': 'Birth summary\nopenEHR-EHR-EVALUATION.birth_summary.v0\ncid: 1380.146.123\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T12:43:07+02:00\nmodificationTime: 2024-06-03T12:43:07+02:00\nuid: 34569352-0a74-4ff9-aebf-8ec9929eb948', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch39', 'label': 'Archetype:\nDetall del naixement\n...\nCLUSTER.birth_detail.v0', 'title': 'Detall del naixement\nopenEHR-EHR-CLUSTER.birth_detail.v0\ncid: 1380.146.124\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T12:44:45+02:00\nmodificationTime: 2024-10-30T08:11:24+01:00\nuid: 2cf8a52d-0cff-48d5-86bc-8022fe025bce', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch40', 'label': 'Archetype:\nAdvance intervention decisions\n...\nEVALUATION.advance_intervention_decisions.v1', 'title': 'Advance intervention decisions\nopenEHR-EHR-EVALUATION.advance_intervention_decisions.v1\ncid: 1380.146.125\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.0\nrevisionLatest: 1.0.0\ncreationTime: 2024-06-03T13:02:35+02:00\nmodificationTime: 2024-06-03T13:02:35+02:00\nuid: fb7b27e1-b008-4aee-b692-148e81aca05f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch41', 'label': 'Archetype:\nDeath summary\n...\nEVALUATION.death_summary.v1', 'title': 'Death summary\nopenEHR-EHR-EVALUATION.death_summary.v1\ncid: 1380.146.126\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.0\nrevisionLatest: 1.0.0\ncreationTime: 2024-06-03T13:02:36+02:00\nmodificationTime: 2024-06-03T13:02:36+02:00\nuid: 345da189-6e77-4d41-94fd-5d5b3e477764', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch42', 'label': 'Archetype:\nGender\n...\nEVALUATION.gender.v1', 'title': 'Gender\nopenEHR-EHR-EVALUATION.gender.v1\ncid: 1380.146.127\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.1\nrevisionLatest: 1.1.1\ncreationTime: 2024-06-03T13:02:37+02:00\nmodificationTime: 2024-06-03T13:02:37+02:00\nuid: 852dd935-7b57-4aa7-ba77-c13c42c8d3ef', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch43', 'label': 'Archetype:\nProgress note\n...\nOBSERVATION.progress_note.v1', 'title': 'Progress note\nopenEHR-EHR-OBSERVATION.progress_note.v1\ncid: 1380.146.128\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.1\nrevisionLatest: 1.1.1\ncreationTime: 2024-06-03T13:02:38+02:00\nmodificationTime: 2024-06-03T13:02:38+02:00\nuid: 4c1c083f-70e1-4359-8ea2-07cafca0be0f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch44', 'label': 'Archetype:\nEpisode of care - institution\n...\nADMIN_ENTRY.episode_institution.v0', 'title': 'Episode of care - institution\nopenEHR-EHR-ADMIN_ENTRY.episode_institution.v0\ncid: 1380.146.129\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T13:02:39+02:00\nmodificationTime: 2024-12-11T08:38:14+01:00\nuid: 8be783ed-7a69-4f43-8816-978891a472df', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch45', 'label': 'Archetype:\nHead circumference\n...\nOBSERVATION.head_circumference.v1', 'title': 'Head circumference\nopenEHR-EHR-OBSERVATION.head_circumference.v1\ncid: 1380.146.130\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.3\nrevisionLatest: 1.0.3\ncreationTime: 2024-06-03T13:02:40+02:00\nmodificationTime: 2024-06-03T13:02:40+02:00\nuid: c4cb423f-6372-44e0-a7f0-b0109464f2bf', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch46', 'label': 'Archetype:\nMedication screening questionnaire\n...\nOBSERVATION.medication_screening.v1', 'title': 'Medication screening questionnaire\nopenEHR-EHR-OBSERVATION.medication_screening.v1\ncid: 1380.146.131\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-06-03T13:02:42+02:00\nmodificationTime: 2024-06-03T13:02:42+02:00\nuid: 95e92636-812d-472e-aa6a-8e5315a34315', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch47', 'label': 'Archetype:\nBreast feeding summary\n...\nEVALUATION.breast_feeding_summary.v0', 'title': 'Breast feeding summary\nopenEHR-EHR-EVALUATION.breast_feeding_summary.v0\ncid: 1380.146.132\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T13:02:43+02:00\nmodificationTime: 2024-06-03T13:02:43+02:00\nuid: e5d5ab60-99ac-465a-aaf8-103c7d508ea9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch48', 'label': 'Archetype:\nManagement screening questionnaire\n...\nOBSERVATION.management_screening.v1', 'title': 'Management screening questionnaire\nopenEHR-EHR-OBSERVATION.management_screening.v1\ncid: 1380.146.133\nproject: Arquetips remots (internacional)\nstatus: REASSESS_DRAFT\nrevision: 1.0.3-alpha\nrevisionLatest: 1.0.3-alpha\ncreationTime: 2024-06-03T13:02:44+02:00\nmodificationTime: 2024-10-30T08:11:22+01:00\nuid: 0c6c23ab-7018-4faf-93dd-c7e717e8569b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch49', 'label': "Archetype:\nPuntuació d'Apgar\n...\nOBSERVATION.apgar.v2", 'title': "Puntuació d'Apgar\nopenEHR-EHR-OBSERVATION.apgar.v2\ncid: 1380.146.134\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.5\nrevisionLatest: 2.0.5\ncreationTime: 2024-06-03T13:02:45+02:00\nmodificationTime: 2024-12-04T08:41:10+01:00\nuid: 9ebf359c-bfcc-41ab-9353-3ed976cab252", 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch50', 'label': 'Archetype:\nHeight/Length\n...\nOBSERVATION.height.v2', 'title': 'Height/Length\nopenEHR-EHR-OBSERVATION.height.v2\ncid: 1380.146.135\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.8\nrevisionLatest: 2.0.8\ncreationTime: 2024-06-03T13:02:47+02:00\nmodificationTime: 2024-06-03T13:02:47+02:00\nuid: 89e5e585-dfef-465f-b344-9b40d9410759', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch51', 'label': "Archetype:\nResultat de laboratori de l'analit\n...\nCLUSTER.laboratory_test_analyte.v1", 'title': "Resultat de laboratori de l'analit\nopenEHR-EHR-CLUSTER.laboratory_test_analyte.v1\ncid: 1380.146.136\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.8\nrevisionLatest: 1.1.8\ncreationTime: 2024-06-03T13:02:48+02:00\nmodificationTime: 2024-08-28T08:17:56+02:00\nuid: f86cd61b-0e0e-4a18-8c07-9c4e537bb4e4", 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch52', 'label': 'Archetype:\nPes corporal\n...\nOBSERVATION.body_weight.v2', 'title': 'Pes corporal\nopenEHR-EHR-OBSERVATION.body_weight.v2\ncid: 1380.146.137\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.1.8\nrevisionLatest: 2.1.8\ncreationTime: 2024-06-03T13:02:49+02:00\nmodificationTime: 2024-12-11T08:38:20+01:00\nuid: 1ae8ee42-b9ba-4704-8f3b-02a8abfd3e03', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch53', 'label': 'Archetype:\nBlood group\n...\nEVALUATION.blood_group.v0', 'title': 'Blood group\nopenEHR-EHR-EVALUATION.blood_group.v0\ncid: 1380.146.138\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-03T13:02:50+02:00\nmodificationTime: 2024-06-03T13:02:50+02:00\nuid: 1b2f42dd-0683-406c-9c2a-35336f771cee', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch54', 'label': 'Archetype:\nResultat de proves de laboratori\n...\nOBSERVATION.laboratory_test_result.v1', 'title': 'Resultat de proves de laboratori\nopenEHR-EHR-OBSERVATION.laboratory_test_result.v1\ncid: 1380.146.139\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.2.5\nrevisionLatest: 1.2.5\ncreationTime: 2024-06-03T13:02:52+02:00\nmodificationTime: 2024-06-03T13:02:52+02:00\nuid: 90225e36-20a8-403a-8172-77e53b9990b2', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch55', 'label': 'Archetype:\nescala_edimburg postpart\n...\nOBSERVATION.escala_edimburg_postpart.v0', 'title': 'escala_edimburg postpart\nopenEHR-EHR-OBSERVATION.escala_edimburg_postpart.v0\ncid: 1380.146.140\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-04T11:11:20+02:00\nmodificationTime: 2024-06-04T11:11:20+02:00\nuid: fa0e2b97-0cef-4e88-afe8-f6309a402b30', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch56', 'label': 'Archetype:\n*Clinical attribute (en)\n...\nOBSERVATION.clinical_attribute.v0', 'title': '*Clinical attribute (en)\nopenEHR-EHR-OBSERVATION.clinical_attribute.v0\ncid: 1380.146.141\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-04T11:13:09+02:00\nmodificationTime: 2024-06-04T11:13:09+02:00\nuid: c9ce3e9d-7556-4221-b430-fffc514a57c3', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch57', 'label': 'Archetype:\nAge assertion\n...\nOBSERVATION.age_assertion.v1', 'title': 'Age assertion\nopenEHR-EHR-OBSERVATION.age_assertion.v1\ncid: 1380.146.147\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.1\nrevisionLatest: 1.0.1\ncreationTime: 2024-06-19T10:42:39+02:00\nmodificationTime: 2024-06-19T10:42:39+02:00\nuid: ceb203cf-0f8e-40a0-a124-59871c14d6d8', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch58', 'label': 'Archetype:\nProcedure screening questionnaire\n...\nOBSERVATION.procedure_screening.v1', 'title': 'Procedure screening questionnaire\nopenEHR-EHR-OBSERVATION.procedure_screening.v1\ncid: 1380.146.148\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-06-19T10:42:40+02:00\nmodificationTime: 2024-06-19T10:42:40+02:00\nuid: 7d2adbd4-0ab6-4def-af0a-00c722cc180e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch59', 'label': 'Archetype:\nReport\n...\nCOMPOSITION.report.v1', 'title': 'Report\nopenEHR-EHR-COMPOSITION.report.v1\ncid: 1380.146.149\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.2.1\nrevisionLatest: 1.2.1\ncreationTime: 2024-06-19T10:42:41+02:00\nmodificationTime: 2024-06-19T10:42:41+02:00\nuid: 1b7dc82e-55a1-4033-b5ab-67e3194772f9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch60', 'label': 'Archetype:\nTNM clinical classification\n...\nCLUSTER.tnm.v1', 'title': 'TNM clinical classification\nopenEHR-EHR-CLUSTER.tnm.v1\ncid: 1380.146.150\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.0\nrevisionLatest: 1.0.0\ncreationTime: 2024-06-20T08:49:29+02:00\nmodificationTime: 2024-06-20T08:49:29+02:00\nuid: f9402113-0bc2-446d-ac86-6d5cc065bb01', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch61', 'label': 'Archetype:\nTNM pathological classification\n...\nCLUSTER.tnm-pathological.v1', 'title': 'TNM pathological classification\nopenEHR-EHR-CLUSTER.tnm-pathological.v1\ncid: 1380.146.151\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-06-20T08:49:30+02:00\nmodificationTime: 2024-06-20T08:49:30+02:00\nuid: 3c3e21f0-0141-40c0-b0c3-d9a45d133dfe', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch62', 'label': 'Archetype:\nSequencing assay\n...\nCLUSTER.sequencing_assay.v0', 'title': 'Sequencing assay\nopenEHR-EHR-CLUSTER.sequencing_assay.v0\ncid: 1380.146.152\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-20T08:49:31+02:00\nmodificationTime: 2024-06-20T08:49:31+02:00\nuid: 80b7cd2c-11f8-429f-80a4-5c341a5b816f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch63', 'label': 'Archetype:\nResult report\n...\nCOMPOSITION.report-result.v1', 'title': 'Result report\nopenEHR-EHR-COMPOSITION.report-result.v1\ncid: 1380.146.153\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.4\nrevisionLatest: 1.0.4\ncreationTime: 2024-06-20T08:49:32+02:00\nmodificationTime: 2024-06-20T08:49:32+02:00\nuid: 91731d1b-67b4-4b14-9d45-255315828bfe', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch64', 'label': 'Archetype:\nGenomic copy number variant\n...\nCLUSTER.genomic_copy_number_variant.v1', 'title': 'Genomic copy number variant\nopenEHR-EHR-CLUSTER.genomic_copy_number_variant.v1\ncid: 1380.146.154\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.0\nrevisionLatest: 1.1.0\ncreationTime: 2024-06-20T08:49:33+02:00\nmodificationTime: 2024-06-20T08:49:33+02:00\nuid: 69e173a1-6963-4313-a500-669da9fc11b4', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch65', 'label': 'Archetype:\nReference sequence\n...\nCLUSTER.reference_sequence.v1', 'title': 'Reference sequence\nopenEHR-EHR-CLUSTER.reference_sequence.v1\ncid: 1380.146.155\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.9\nrevisionLatest: 1.0.9\ncreationTime: 2024-06-20T08:49:35+02:00\nmodificationTime: 2024-06-20T08:49:35+02:00\nuid: 0d76b26d-8cbd-4e0d-a7ac-e83bf4dfcae9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch66', 'label': 'Archetype:\nSpecimen\n...\nCLUSTER.specimen.v1', 'title': 'Specimen\nopenEHR-EHR-CLUSTER.specimen.v1\ncid: 1380.146.156\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.2\nrevisionLatest: 1.1.2\ncreationTime: 2024-06-20T08:49:36+02:00\nmodificationTime: 2024-06-20T08:49:36+02:00\nuid: 4f4d5daf-b6b7-475f-ae49-66b3c5003e6f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch67', 'label': 'Archetype:\nFamily prevalence\n...\nCLUSTER.family_prevalence.v1', 'title': 'Family prevalence\nopenEHR-EHR-CLUSTER.family_prevalence.v1\ncid: 1380.146.157\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.7\nrevisionLatest: 1.0.7\ncreationTime: 2024-06-20T08:49:37+02:00\nmodificationTime: 2024-08-28T08:18:01+02:00\nuid: 28365b69-c6b7-4320-9329-c890dabd8b63', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch68', 'label': 'Archetype:\nGenomic variant result\n...\nCLUSTER.genomic_variant_result.v1', 'title': 'Genomic variant result\nopenEHR-EHR-CLUSTER.genomic_variant_result.v1\ncid: 1380.146.158\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.3\nrevisionLatest: 1.0.3\ncreationTime: 2024-06-20T08:49:38+02:00\nmodificationTime: 2024-06-20T08:49:38+02:00\nuid: ddb13dc5-5227-48f7-93f5-1b6825ace295', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch69', 'label': 'Archetype:\nKnowledge base reference\n...\nCLUSTER.knowledge_base_reference.v1', 'title': 'Knowledge base reference\nopenEHR-EHR-CLUSTER.knowledge_base_reference.v1\ncid: 1380.146.159\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.1\nrevisionLatest: 1.0.1\ncreationTime: 2024-06-20T08:49:39+02:00\nmodificationTime: 2024-06-20T08:49:39+02:00\nuid: 27420a13-59df-4961-b390-a5848dd5eb92', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch70', 'label': 'Archetype:\nGeneral sequencing result parameter\n...\nCLUSTER.general_sequencing_result_parameter.v0', 'title': 'General sequencing result parameter\nopenEHR-EHR-CLUSTER.general_sequencing_result_parameter.v0\ncid: 1380.146.160\nproject: Arquetips remots HighMED\nstatus: TEAMREVIEW\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-20T08:56:13+02:00\nmodificationTime: 2024-06-20T08:56:13+02:00\nuid: 662cbae0-6ab8-4ad9-a847-547e69b5c356', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch71', 'label': 'Archetype:\nSequencing result\n...\nCLUSTER.sequencing_result.v0', 'title': 'Sequencing result\nopenEHR-EHR-CLUSTER.sequencing_result.v0\ncid: 1380.146.161\nproject: Arquetips remots HighMED\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-06-20T08:56:14+02:00\nmodificationTime: 2024-06-20T08:56:14+02:00\nuid: 3977b068-9187-4670-b034-72d891a65abc', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch72', 'label': 'Archetype:\nImaging examination\n...\nACTION.imaging_exam.v0', 'title': 'Imaging examination\nopenEHR-EHR-ACTION.imaging_exam.v0\ncid: 1380.146.164\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-07-24T12:39:19+02:00\nmodificationTime: 2024-07-24T12:39:19+02:00\nuid: 6a9764e8-0424-4642-afc3-39f1d0786c28', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch73', 'label': 'Archetype:\nImaging examination result\n...\nOBSERVATION.imaging_exam_result.v1', 'title': 'Imaging examination result\nopenEHR-EHR-OBSERVATION.imaging_exam_result.v1\ncid: 1380.146.165\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.1\nrevisionLatest: 1.1.1\ncreationTime: 2024-07-24T12:39:21+02:00\nmodificationTime: 2024-07-24T12:39:21+02:00\nuid: b4a88b6a-33f1-45df-b961-75c3e7eca950', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch74', 'label': 'Archetype:\nSpecimen measurements\n...\nCLUSTER.specimen_measurements.v1', 'title': 'Specimen measurements\nopenEHR-EHR-CLUSTER.specimen_measurements.v1\ncid: 1380.146.166\nproject: Arquetips remots (internacional)\nstatus: REASSESS_DRAFT\nrevision: 1.0.2-alpha\nrevisionLatest: 1.0.2-alpha\ncreationTime: 2024-07-24T12:39:22+02:00\nmodificationTime: 2024-07-24T12:39:22+02:00\nuid: ae8f7946-2197-4d85-97fe-ea2f93d932f1', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch75', 'label': 'Archetype:\nContext Clínic\n...\nCLUSTER.clinical_context.v0', 'title': 'Context Clínic\nopenEHR-EHR-CLUSTER.clinical_context.v0\ncid: 1380.146.174\nproject: Clinical Context\nstatus: TEAMREVIEW\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-07-25T16:25:13+02:00\nmodificationTime: 2024-10-29T16:19:07+01:00\nuid: 16b88969-9f7a-4790-8876-252cfac7ff5e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch76', 'label': 'Archetype:\nDetalls administració\n...\nCLUSTER.administration_details.v0', 'title': 'Detalls administració\nopenEHR-EHR-CLUSTER.administration_details.v0\ncid: 1380.146.176\nproject: Admin Salut\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-07-26T08:23:58+02:00\nmodificationTime: 2024-11-25T13:38:32+01:00\nuid: 6505bb58-3bb6-4383-b934-c94f2211814b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch77', 'label': 'Archetype:\nMotiu actualitzacio registre\n...\nCLUSTER.motiu_actualitzacio_registre.v0', 'title': 'Motiu actualitzacio registre\nopenEHR-EHR-CLUSTER.motiu_actualitzacio_registre.v0\ncid: 1380.146.179\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-07-29T11:49:37+02:00\nmodificationTime: 2024-09-20T11:10:30+02:00\nuid: 09499450-83bc-498d-bdbe-5c06b081e031', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch78', 'label': 'Archetype:\nDetalls addicionals de la reacció adversa per a la notificació a Farmacovigilància\n...\nCLUSTER.detalls_addicionals_notificacio_farmacovigilancia.v0', 'title': 'Detalls addicionals de la reacció adversa per a la notificació a Farmacovigilància\nopenEHR-EHR-CLUSTER.detalls_addicionals_notificacio_farmacovigilancia.v0\ncid: 1380.146.182\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-07-29T14:25:11+02:00\nmodificationTime: 2024-07-29T14:25:11+02:00\nuid: 397fa160-69ca-44ff-a16b-f8df2e4dac43', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch79', 'label': 'Archetype:\nDetalls de la notificació a Farmacovigilancia\n...\nCLUSTER.notificacio_a_farmacovigilancia.v0', 'title': 'Detalls de la notificació a Farmacovigilancia\nopenEHR-EHR-CLUSTER.notificacio_a_farmacovigilancia.v0\ncid: 1380.146.183\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-07-29T14:38:02+02:00\nmodificationTime: 2024-07-29T14:38:02+02:00\nuid: a29ee238-ca0f-47ef-a1b1-a3e4e6f8feae', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch80', 'label': 'Archetype:\nDetalls addicionals Reacció Adversa\n...\nCLUSTER.detalls_addicionals_reaccio_adversa.v0', 'title': 'Detalls addicionals Reacció Adversa\nopenEHR-EHR-CLUSTER.detalls_addicionals_reaccio_adversa.v0\ncid: 1380.146.185\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-08-05T11:14:15+02:00\nmodificationTime: 2024-10-02T08:50:25+02:00\nuid: 43089c72-67cd-42b3-b402-24f3c7d84908', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch81', 'label': 'Archetype:\nDetalls notificacio Farmacovigilancia\n...\nCLUSTER.detalls_notificacio_farmacovigilancia.v0', 'title': 'Detalls notificacio Farmacovigilancia\nopenEHR-EHR-CLUSTER.detalls_notificacio_farmacovigilancia.v0\ncid: 1380.146.187\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-08-05T11:56:48+02:00\nmodificationTime: 2024-11-25T10:25:48+01:00\nuid: 025f8c40-892e-4c2b-88c1-a944edb13355', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch82', 'label': 'Archetype:\nFamily history\n...\nEVALUATION.family_history.v2', 'title': 'Family history\nopenEHR-EHR-EVALUATION.family_history.v2\ncid: 1380.146.191\nproject: Arquetips remots (internacional)\nstatus: REASSESS_DRAFT\nrevision: 2.0.5-alpha\nrevisionLatest: 2.0.5-alpha\ncreationTime: 2024-08-28T10:39:46+02:00\nmodificationTime: 2024-12-11T08:38:17+01:00\nuid: 12e8fcc3-a17b-45ad-a7dd-6e8ec78d60a4', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch83', 'label': 'Archetype:\nStory/History\n...\nOBSERVATION.story.v1', 'title': 'Story/History\nopenEHR-EHR-OBSERVATION.story.v1\ncid: 1380.146.192\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.3.0\nrevisionLatest: 1.3.0\ncreationTime: 2024-08-28T10:39:48+02:00\nmodificationTime: 2024-08-28T10:39:48+02:00\nuid: 7e289b5c-e123-4dc0-9aad-548352b64915', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch84', 'label': 'Archetype:\nProblem/Diagnosis qualifier\n...\nCLUSTER.problem_qualifier.v2', 'title': 'Problem/Diagnosis qualifier\nopenEHR-EHR-CLUSTER.problem_qualifier.v2\ncid: 1380.146.193\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.1\nrevisionLatest: 2.0.1\ncreationTime: 2024-08-28T10:39:50+02:00\nmodificationTime: 2024-08-28T10:39:50+02:00\nuid: 9caaeeb6-7da2-4ab8-8af0-b7643e867dbf', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch85', 'label': 'Archetype:\nNota_Pla\n...\nEVALUATION.plan_note.v0', 'title': 'Nota_Pla\nopenEHR-EHR-EVALUATION.plan_note.v0\ncid: 1380.146.194\nproject: Curs Clínic\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-08-29T13:00:53+02:00\nmodificationTime: 2024-12-03T14:01:24+01:00\nuid: b0b27f1e-6b24-4017-8d7b-89ca6524a79a', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch86', 'label': 'Archetype:\nClinical evidence\n...\nCLUSTER.clinical_evidence.v1', 'title': 'Clinical evidence\nopenEHR-EHR-CLUSTER.clinical_evidence.v1\ncid: 1380.146.199\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.2.2\nrevisionLatest: 1.2.2\ncreationTime: 2024-09-06T10:17:48+02:00\nmodificationTime: 2024-09-06T10:17:48+02:00\nuid: 1a30b06f-887a-4b08-ab42-243bf6757c33', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch87', 'label': 'Archetype:\nthesaurus_ecap\n...\nCLUSTER.thesaurus_ecap.v0', 'title': 'thesaurus_ecap\nopenEHR-EHR-CLUSTER.thesaurus_ecap.v0\ncid: 1380.146.208\nproject: Condicionants i Problemes\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-10-11T12:20:20+02:00\nmodificationTime: 2024-10-11T12:20:20+02:00\nuid: 7d2ed412-f9f8-4fb7-bf8f-0e1ea045fb0a', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch88', 'label': 'Archetype:\nAdverse reaction screening questionnaire\n...\nOBSERVATION.adverse_reaction_screening.v0', 'title': 'Adverse reaction screening questionnaire\nopenEHR-EHR-OBSERVATION.adverse_reaction_screening.v0\ncid: 1380.146.210\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-10-25T09:48:44+02:00\nmodificationTime: 2024-10-25T09:48:44+02:00\nuid: a4258fa6-71ce-4624-aa6e-0f4aed79c0cb', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch89', 'label': 'Archetype:\nRellevància\n...\nCLUSTER.relevance.v0', 'title': 'Rellevància\nopenEHR-EHR-CLUSTER.relevance.v0\ncid: 1380.146.211\nproject: Condicionants i Problemes\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-10-28T16:04:05+01:00\nmodificationTime: 2024-10-28T16:04:05+01:00\nuid: b53b4753-2042-40b8-a410-e151c422f1d4', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch90', 'label': 'Archetype:\nDades del professional\n...\nCLUSTER.admin_professional.v0', 'title': 'Dades del professional\nopenEHR-EHR-CLUSTER.admin_professional.v0\ncid: 1380.146.215\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-11T11:19:37+01:00\nmodificationTime: 2024-12-13T08:32:35+01:00\nuid: cefbcae3-c8dd-41f8-89d0-cc82a748473b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch91', 'label': 'Archetype:\nProcés clínic\n...\nCLUSTER.health_thread.v0', 'title': 'Procés clínic\nopenEHR-EHR-CLUSTER.health_thread.v0\ncid: 1380.146.216\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-11T11:20:40+01:00\nmodificationTime: 2024-12-02T17:12:35+01:00\nuid: 450de0c1-a226-4458-ac5a-94765c63f1b9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch92', 'label': 'Archetype:\nIdentificació fetus/nadó\n...\nCLUSTER.fetus_identification.v0', 'title': 'Identificació fetus/nadó\nopenEHR-EHR-CLUSTER.fetus_identification.v0\ncid: 1380.146.217\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:10:37+01:00\nmodificationTime: 2024-12-02T17:11:10+01:00\nuid: fc4bb32c-b178-4315-b8a7-a3870e5be74c', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch93', 'label': 'Archetype:\nTancament procés obstètric\n...\nCLUSTER.obstetric_process_closure.v0', 'title': 'Tancament procés obstètric\nopenEHR-EHR-CLUSTER.obstetric_process_closure.v0\ncid: 1380.146.218\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:10:37+01:00\nmodificationTime: 2024-12-02T16:53:23+01:00\nuid: afd04e62-fed7-48d7-a381-fe05d130c8c3', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch94', 'label': 'Archetype:\n*PROBS_base_composition (en)\n...\nCOMPOSITION.probs_base_composition.v0', 'title': '*PROBS_base_composition (en)\nopenEHR-EHR-COMPOSITION.probs_base_composition.v0\ncid: 1380.146.219\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:10:38+01:00\nmodificationTime: 2024-11-12T08:10:38+01:00\nuid: 0125f10b-e4b1-4409-80ec-9fe6fc4f8f8e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch95', 'label': 'Archetype:\n*PROBS_base_observation (en)\n...\nOBSERVATION.probs_base_observation.v0', 'title': '*PROBS_base_observation (en)\nopenEHR-EHR-OBSERVATION.probs_base_observation.v0\ncid: 1380.146.220\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:10:38+01:00\nmodificationTime: 2024-11-12T08:10:38+01:00\nuid: e5b27575-72b6-425e-a0f2-bb3da9289e67', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch96', 'label': 'Archetype:\nResum embaràs\n...\nCLUSTER.birth_summary_attention_mother.v0', 'title': 'Resum embaràs\nopenEHR-EHR-CLUSTER.birth_summary_attention_mother.v0\ncid: 1380.146.221\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:21:45+01:00\nmodificationTime: 2024-12-02T17:07:54+01:00\nuid: 69e631d2-321d-4648-a1d3-e21d395caffd', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch97', 'label': 'Archetype:\nObservacions\n...\nCLUSTER.comment.v0', 'title': 'Observacions\nopenEHR-EHR-CLUSTER.comment.v0\ncid: 1380.146.222\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:21:48+01:00\nmodificationTime: 2024-12-02T17:08:28+01:00\nuid: 1dbfd17a-3404-4d93-833a-ddcfd6191848', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch98', 'label': 'Archetype:\nGestió de la pacient\n...\nCLUSTER.management_attention_mother.v0', 'title': 'Gestió de la pacient\nopenEHR-EHR-CLUSTER.management_attention_mother.v0\ncid: 1380.146.223\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:21:49+01:00\nmodificationTime: 2024-12-02T17:13:39+01:00\nuid: de9b95ef-f4e2-4f3b-b5c5-208dc7e0447b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch99', 'label': 'Archetype:\nMedicació\n...\nCLUSTER.medication_attention_mother.v0', 'title': 'Medicació\nopenEHR-EHR-CLUSTER.medication_attention_mother.v0\ncid: 1380.146.224\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:21:50+01:00\nmodificationTime: 2024-12-02T17:14:06+01:00\nuid: 1ed7911a-0599-48ef-bd53-d2c4cc1e6fed', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch100', 'label': 'Archetype:\nSímptomes\n...\nCLUSTER.symptoms_attention_to_mother.v0', 'title': 'Símptomes\nopenEHR-EHR-CLUSTER.symptoms_attention_to_mother.v0\ncid: 1380.146.225\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:21:50+01:00\nmodificationTime: 2024-12-02T16:59:30+01:00\nuid: 927fab8a-71c2-4a70-b0cc-799b63400d4b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch101', 'label': 'Archetype:\nTransfer\n...\nCLUSTER.transfer_attention_mother.v0', 'title': 'Transfer\nopenEHR-EHR-CLUSTER.transfer_attention_mother.v0\ncid: 1380.146.226\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T08:21:51+01:00\nmodificationTime: 2024-12-02T17:00:43+01:00\nuid: 71210c27-7657-4d6c-93d6-73e15b0704b7', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch102', 'label': 'Archetype:\nResum del part\n...\nCLUSTER.birth_summary.v0', 'title': 'Resum del part\nopenEHR-EHR-CLUSTER.birth_summary.v0\ncid: 1380.146.227\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:13:29+01:00\nmodificationTime: 2024-11-12T10:13:29+01:00\nuid: c9e929ad-0fc5-4456-acf0-b06ac3d359c4', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch103', 'label': 'Archetype:\nObservacions part fetus\n...\nCLUSTER.fetus_observations.v0', 'title': 'Observacions part fetus\nopenEHR-EHR-CLUSTER.fetus_observations.v0\ncid: 1380.146.228\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:13:31+01:00\nmodificationTime: 2024-12-02T17:11:41+01:00\nuid: 8a10b9cf-49bc-49d1-b1db-a5c98c8a6547', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch104', 'label': 'Archetype:\nID fetus/nadó\n...\nCLUSTER.id_fetus_baby.v0', 'title': 'ID fetus/nadó\nopenEHR-EHR-CLUSTER.id_fetus_baby.v0\ncid: 1380.146.229\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:13:32+01:00\nmodificationTime: 2024-12-02T17:13:05+01:00\nuid: 71b143c1-a9a0-48bb-8590-16c9c1031d87', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch105', 'label': 'Archetype:\nFetus i nadó\n...\nCLUSTER.newborn.v0', 'title': 'Fetus i nadó\nopenEHR-EHR-CLUSTER.newborn.v0\ncid: 1380.146.230\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:13:36+01:00\nmodificationTime: 2024-12-02T17:16:22+01:00\nuid: ae33eceb-083d-4504-9c35-a452dca82dd0', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch106', 'label': 'Archetype:\nSeguiment nadò\n...\nCLUSTER.seguiment_nado.v0', 'title': 'Seguiment nadò\nopenEHR-EHR-CLUSTER.seguiment_nado.v0\ncid: 1380.146.231\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:17:45+01:00\nmodificationTime: 2024-12-02T16:57:37+01:00\nuid: a860107d-f601-4d97-8f82-2f46b1e7bab1', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch107', 'label': "Archetype:\nResum de l'embaràs\n...\nCLUSTER.resum_de_l_embaras.v0", 'title': "Resum de l'embaràs\nopenEHR-EHR-CLUSTER.resum_de_l_embaras.v0\ncid: 1380.146.232\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:23:53+01:00\nmodificationTime: 2024-12-02T16:55:51+01:00\nuid: 1bb508b6-9898-48e3-a3e5-bb9d15d0de15", 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch108', 'label': 'Archetype:\nActivitats educatives\n...\nCLUSTER.activitats_educatius_seguiment_mare.v0', 'title': 'Activitats educatives\nopenEHR-EHR-CLUSTER.activitats_educatius_seguiment_mare.v0\ncid: 1380.146.233\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:52+01:00\nmodificationTime: 2024-12-02T17:03:00+01:00\nuid: 25e41670-4fb0-416c-959f-1835fb4d38c8', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch109', 'label': 'Archetype:\nAntecedents personals de la dona\n...\nCLUSTER.antecedents_personals_de_la_dona.v0', 'title': 'Antecedents personals de la dona\nopenEHR-EHR-CLUSTER.antecedents_personals_de_la_dona.v0\ncid: 1380.146.234\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:53+01:00\nmodificationTime: 2024-12-13T08:26:50+01:00\nuid: b9199dc9-c253-4092-90fa-5d11e218d875', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch110', 'label': 'Archetype:\nTest ASSIST\n...\nCLUSTER.assist_test.v0', 'title': 'Test ASSIST\nopenEHR-EHR-CLUSTER.assist_test.v0\ncid: 1380.146.235\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:53+01:00\nmodificationTime: 2024-12-02T17:07:22+01:00\nuid: f358a6b7-d24a-411c-a7b7-1f8c943f433f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch111', 'label': 'Archetype:\nDades de la parella\n...\nCLUSTER.dades_de_la_parella.v0', 'title': 'Dades de la parella\nopenEHR-EHR-CLUSTER.dades_de_la_parella.v0\ncid: 1380.146.236\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:54+01:00\nmodificationTime: 2024-12-13T11:45:38+01:00\nuid: 2181d680-d2e6-4c6a-9cd1-0b14b4a676ad', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch112', 'label': 'Archetype:\nDades generals de la dona\n...\nCLUSTER.mother_general_data.v0', 'title': 'Dades generals de la dona\nopenEHR-EHR-CLUSTER.mother_general_data.v0\ncid: 1380.146.237\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:55+01:00\nmodificationTime: 2024-12-02T17:15:08+01:00\nuid: 84f43a9d-b3c6-4b5c-b46b-15a957b6b934', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch113', 'label': "Archetype:\nDades generals per al seguiment de l'embaràs de la mare\n...\nCLUSTER.mothers_pregnancy_follow_up_general_data.v0", 'title': "Dades generals per al seguiment de l'embaràs de la mare\nopenEHR-EHR-CLUSTER.mothers_pregnancy_follow_up_general_data.v0\ncid: 1380.146.238\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:57+01:00\nmodificationTime: 2024-12-02T17:15:46+01:00\nuid: 38cd79a7-d320-4649-8f0a-667f45324d90", 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch114', 'label': 'Archetype:\nTests i escales del seguiment embaràs mare\n...\nCLUSTER.mothers_pregnancy_follow_up_tests.v0', 'title': 'Tests i escales del seguiment embaràs mare\nopenEHR-EHR-CLUSTER.mothers_pregnancy_follow_up_tests.v0\ncid: 1380.146.239\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:57+01:00\nmodificationTime: 2024-11-12T10:32:57+01:00\nuid: de790dc7-796e-490c-8235-6ee1af210045', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch115', 'label': 'Archetype:\nExploracions complementàries seguiment embaràs\n...\nCLUSTER.pregnancy_follow_up_complementary_tests.v0', 'title': 'Exploracions complementàries seguiment embaràs\nopenEHR-EHR-CLUSTER.pregnancy_follow_up_complementary_tests.v0\ncid: 1380.146.240\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:58+01:00\nmodificationTime: 2024-12-02T16:55:18+01:00\nuid: b397ef17-200b-4309-a201-87acdba697b9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch116', 'label': 'Archetype:\nPantalla de sol·licitud de proves\n...\nCLUSTER.test_request_screen.v0', 'title': 'Pantalla de sol·licitud de proves\nopenEHR-EHR-CLUSTER.test_request_screen.v0\ncid: 1380.146.241\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:32:59+01:00\nmodificationTime: 2024-12-02T17:00:09+01:00\nuid: 6afbec20-7dde-4209-937c-dd3af8c422ea', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch117', 'label': 'Archetype:\nDades administratives del pacient\n...\nCLUSTER.administrative_data_of_the_visit.v0', 'title': 'Dades administratives del pacient\nopenEHR-EHR-CLUSTER.administrative_data_of_the_visit.v0\ncid: 1380.146.242\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:44+01:00\nmodificationTime: 2024-12-02T17:04:56+01:00\nuid: 75f54256-4401-4acd-bd2a-cd61412e636b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch118', 'label': 'Archetype:\nAltres escales\n...\nCLUSTER.altres_escales.v0', 'title': 'Altres escales\nopenEHR-EHR-CLUSTER.altres_escales.v0\ncid: 1380.146.243\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:44+01:00\nmodificationTime: 2024-12-02T17:05:28+01:00\nuid: 77095aa8-956c-4d12-87e8-7934ec843973', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch119', 'label': 'Archetype:\nActivitats educatives puerperi mare\n...\nCLUSTER.educational_activities_mother_puerperium.v0', 'title': 'Activitats educatives puerperi mare\nopenEHR-EHR-CLUSTER.educational_activities_mother_puerperium.v0\ncid: 1380.146.244\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:45+01:00\nmodificationTime: 2024-12-02T17:09:38+01:00\nuid: a5d5dea9-072a-4281-8bb5-46b57d536390', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch120', 'label': 'Archetype:\nEscales\n...\nCLUSTER.escales.v0', 'title': 'Escales\nopenEHR-EHR-CLUSTER.escales.v0\ncid: 1380.146.245\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:46+01:00\nmodificationTime: 2024-12-02T17:10:38+01:00\nuid: 63809e0b-872a-4f45-bba1-b479aae1a997', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch121', 'label': 'Archetype:\nAvaluació de riscos per a la salut\n...\nCLUSTER.health_risk_assessment.v0', 'title': 'Avaluació de riscos per a la salut\nopenEHR-EHR-CLUSTER.health_risk_assessment.v0\ncid: 1380.146.246\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:47+01:00\nmodificationTime: 2024-12-02T17:12:08+01:00\nuid: a3dd0fa2-5c4b-462e-b1a7-46517f551050', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch122', 'label': 'Archetype:\nTractaments\n...\nCLUSTER.mediction_periperium_mother.v0', 'title': 'Tractaments\nopenEHR-EHR-CLUSTER.mediction_periperium_mother.v0\ncid: 1380.146.247\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:48+01:00\nmodificationTime: 2024-12-02T17:14:37+01:00\nuid: b92833da-d007-4493-ac79-a8467b966651', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch123', 'label': "Archetype:\nResultats de l'examen físic\n...\nCLUSTER.physical_examination_findings.v0", 'title': "Resultats de l'examen físic\nopenEHR-EHR-CLUSTER.physical_examination_findings.v0\ncid: 1380.146.248\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:48+01:00\nmodificationTime: 2024-12-02T16:54:29+01:00\nuid: 50e7b122-aceb-4562-a458-3f5f8d2120eb", 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch124', 'label': 'Archetype:\nResum embaràs\n...\nCLUSTER.resum_embaras.v0', 'title': 'Resum embaràs\nopenEHR-EHR-CLUSTER.resum_embaras.v0\ncid: 1380.146.249\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:49+01:00\nmodificationTime: 2024-12-02T16:56:34+01:00\nuid: f07b2e5a-a0db-4630-9338-02248ade3828', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch125', 'label': 'Archetype:\nSignes vitals\n...\nCLUSTER.signes_vitals.v0', 'title': 'Signes vitals\nopenEHR-EHR-CLUSTER.signes_vitals.v0\ncid: 1380.146.250\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:49+01:00\nmodificationTime: 2024-12-02T16:58:14+01:00\nuid: 22a3b92d-abeb-4eff-a46c-1dca9e85e827', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch126', 'label': 'Archetype:\nSimptomes i problemes\n...\nCLUSTER.simptomes_i_problemes.v0', 'title': 'Simptomes i problemes\nopenEHR-EHR-CLUSTER.simptomes_i_problemes.v0\ncid: 1380.146.251\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:39:50+01:00\nmodificationTime: 2024-12-02T16:58:57+01:00\nuid: 5568a84e-ca4a-44c4-a5e6-65026c78c9e6', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch127', 'label': 'Archetype:\nSalut sexual\n...\nCLUSTER.salut_sexual.v0', 'title': 'Salut sexual\nopenEHR-EHR-CLUSTER.salut_sexual.v0\ncid: 1380.146.252\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:42:26+01:00\nmodificationTime: 2024-12-02T16:57:05+01:00\nuid: d12258a2-7d2c-444a-babb-542695db147b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch128', 'label': 'Archetype:\nActivitats educatives puerperi nadó\n...\nCLUSTER.educational_activities_newborn_puerperium.v0', 'title': 'Activitats educatives puerperi nadó\nopenEHR-EHR-CLUSTER.educational_activities_newborn_puerperium.v0\ncid: 1380.146.253\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:52:48+01:00\nmodificationTime: 2024-12-02T17:10:05+01:00\nuid: 4fa58e1c-d1af-4261-96a6-8c39dbebc2be', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch129', 'label': 'Archetype:\nPuerperi del nadó\n...\nCLUSTER.newborn_puerperium.v0', 'title': 'Puerperi del nadó\nopenEHR-EHR-CLUSTER.newborn_puerperium.v0\ncid: 1380.146.254\nproject: Procés Obstètric (PROBS)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-12T10:52:50+01:00\nmodificationTime: 2024-12-13T10:58:00+01:00\nuid: 1e7c69ca-43ed-42ba-a6fc-c8c1c87022f7', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch130', 'label': 'Archetype:\nAnatomical pathology examination\n...\nCLUSTER.anatomical_pathology_exam.v0', 'title': 'Anatomical pathology examination\nopenEHR-EHR-CLUSTER.anatomical_pathology_exam.v0\ncid: 1380.146.257\nproject: Arquetips remots (internacional)\nstatus: TEAMREVIEW\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T13:06:07+01:00\nmodificationTime: 2024-11-14T13:06:07+01:00\nuid: 107f9f4e-b278-4be8-a5f4-21cdf19985e7', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch131', 'label': 'Archetype:\nService\n...\nACTION.service.v1', 'title': 'Service\nopenEHR-EHR-ACTION.service.v1\ncid: 1380.146.258\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.1\nrevisionLatest: 1.0.1\ncreationTime: 2024-11-14T13:10:31+01:00\nmodificationTime: 2024-11-14T13:10:31+01:00\nuid: 472b238c-4432-44f0-9847-9990924f6196', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch132', 'label': 'Archetype:\nRequest for service\n...\nCOMPOSITION.request.v1', 'title': 'Request for service\nopenEHR-EHR-COMPOSITION.request.v1\ncid: 1380.146.259\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.3\nrevisionLatest: 1.1.3\ncreationTime: 2024-11-14T13:10:32+01:00\nmodificationTime: 2024-11-14T13:10:32+01:00\nuid: 0942a3f6-3f2d-431c-871c-84bc722f4626', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch133', 'label': 'Archetype:\nRecommendation\n...\nEVALUATION.recommendation.v2', 'title': 'Recommendation\nopenEHR-EHR-EVALUATION.recommendation.v2\ncid: 1380.146.260\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.3\nrevisionLatest: 2.0.3\ncreationTime: 2024-11-14T13:15:12+01:00\nmodificationTime: 2024-11-14T13:15:12+01:00\nuid: a15aad41-4ae9-4588-be4e-5c67f83e442f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch134', 'label': 'Archetype:\nProcedure report\n...\nCOMPOSITION.report-procedure.v1', 'title': 'Procedure report\nopenEHR-EHR-COMPOSITION.report-procedure.v1\ncid: 1380.146.261\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-11-14T13:15:13+01:00\nmodificationTime: 2024-11-14T13:15:13+01:00\nuid: a8d1333d-63ef-4db0-958f-62643d0fa6c5', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch135', 'label': 'Archetype:\nScreening Activity\n...\nACTION.screening.v0', 'title': 'Screening Activity\nopenEHR-EHR-ACTION.screening.v0\ncid: 1380.146.262\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T13:15:14+01:00\nmodificationTime: 2024-11-14T13:15:14+01:00\nuid: 5f3ceb95-acb4-4b57-bc94-9db3abd2962a', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch136', 'label': 'Archetype:\nScreening Activity\n...\nACTION.screening_activity.v0', 'title': 'Screening Activity\nopenEHR-EHR-ACTION.screening_activity.v0\ncid: 1380.146.263\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T13:19:11+01:00\nmodificationTime: 2024-11-14T13:19:11+01:00\nuid: 30d6ae1f-5b6a-4f17-8dbe-ce3056a891db', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch137', 'label': 'Archetype:\nPressió arterial\n...\nOBSERVATION.blood_pressure.v2', 'title': 'Pressió arterial\nopenEHR-EHR-OBSERVATION.blood_pressure.v2\ncid: 1380.146.264\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.0.9\nrevisionLatest: 2.0.9\ncreationTime: 2024-11-14T13:33:01+01:00\nmodificationTime: 2024-12-04T08:41:14+01:00\nuid: 1811b084-29c0-4bec-bde3-c70b7a5bc28e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch138', 'label': 'Archetype:\nAnticoagulant treatment\n...\nOBSERVATION.anticoagulant_treatment.v0', 'title': 'Anticoagulant treatment\nopenEHR-EHR-OBSERVATION.anticoagulant_treatment.v0\ncid: 1380.146.265\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T13:38:13+01:00\nmodificationTime: 2024-11-14T13:38:13+01:00\nuid: 9ead058a-c6ef-4029-9475-f0d706cb9c12', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch139', 'label': 'Archetype:\nClinical Scale\n...\nOBSERVATION.clinical_scale.v0', 'title': 'Clinical Scale\nopenEHR-EHR-OBSERVATION.clinical_scale.v0\ncid: 1380.146.266\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T13:38:34+01:00\nmodificationTime: 2024-11-14T13:38:34+01:00\nuid: 6b500f49-7962-4557-8649-d2596f795f00', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch140', 'label': 'Archetype:\nDiagnostic test results\n...\nSECTION.diagnostic_reports.v0', 'title': 'Diagnostic test results\nopenEHR-EHR-SECTION.diagnostic_reports.v0\ncid: 1380.146.267\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:40:44+01:00\nmodificationTime: 2024-11-14T14:40:44+01:00\nuid: 7b461706-fbc4-4009-ae85-a8f6710de64c', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch141', 'label': 'Archetype:\nDocument Entry Metadata\n...\nCLUSTER.document_entry_metadata.v0', 'title': 'Document Entry Metadata\nopenEHR-EHR-CLUSTER.document_entry_metadata.v0\ncid: 1380.146.268\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:40:46+01:00\nmodificationTime: 2024-11-14T14:40:46+01:00\nuid: 31d20406-e3c0-481e-87e5-3b80587e625a', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch142', 'label': 'Archetype:\nPatient context\n...\nADMIN_ENTRY.patient_context.v0', 'title': 'Patient context\nopenEHR-EHR-ADMIN_ENTRY.patient_context.v0\ncid: 1380.146.269\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:44:02+01:00\nmodificationTime: 2024-11-14T14:44:02+01:00\nuid: 3bd12498-18d1-459c-a09f-4fc6c71bdbc2', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch143', 'label': 'Archetype:\nPatient context\n...\nCOMPOSITION.patient_context.v0', 'title': 'Patient context\nopenEHR-EHR-COMPOSITION.patient_context.v0\ncid: 1380.146.270\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:44:33+01:00\nmodificationTime: 2024-11-14T14:44:33+01:00\nuid: 27b1e186-773e-4e0d-ad03-357c74ec0b77', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch144', 'label': 'Archetype:\nMedical device\n...\nCLUSTER.device.v1', 'title': 'Medical device\nopenEHR-EHR-CLUSTER.device.v1\ncid: 1380.146.271\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.4\nrevisionLatest: 1.1.4\ncreationTime: 2024-11-14T14:49:42+01:00\nmodificationTime: 2024-11-14T14:49:42+01:00\nuid: dbd6f4b3-a3e6-41b1-a21e-3530ac1ca212', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch145', 'label': 'Archetype:\nMedical device details\n...\nCLUSTER.device_details.v0', 'title': 'Medical device details\nopenEHR-EHR-CLUSTER.device_details.v0\ncid: 1380.146.272\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:49:43+01:00\nmodificationTime: 2024-11-14T14:49:43+01:00\nuid: 9cf4152b-3fe8-4f5a-9806-999d797a3c55', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch146', 'label': 'Archetype:\nMedia file\n...\nCLUSTER.media_file.v1', 'title': 'Media file\nopenEHR-EHR-CLUSTER.media_file.v1\ncid: 1380.146.273\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.4\nrevisionLatest: 1.0.4\ncreationTime: 2024-11-14T14:49:45+01:00\nmodificationTime: 2024-12-04T08:41:19+01:00\nuid: e2c3697a-6163-4bc7-86d0-519dd6b954f9', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch147', 'label': 'Archetype:\nEthnic identity\n...\nEVALUATION.ethnicity.v1', 'title': 'Ethnic identity\nopenEHR-EHR-EVALUATION.ethnicity.v1\ncid: 1380.146.274\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.3\nrevisionLatest: 1.1.3\ncreationTime: 2024-11-14T14:49:46+01:00\nmodificationTime: 2024-11-14T14:49:46+01:00\nuid: 94ed2650-e15b-4145-8304-5f73181147af', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch148', 'label': 'Archetype:\nCondicions ambientals - CatSalut (en)\n...\nCLUSTER.environmental_conditions-CatSalut.v0', 'title': 'Condicions ambientals - CatSalut (en)\nopenEHR-EHR-CLUSTER.environmental_conditions-CatSalut.v0\ncid: 1380.146.275\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:52:36+01:00\nmodificationTime: 2024-11-14T14:52:36+01:00\nuid: 6b853e63-a343-4d34-b04a-11b84abd63e0', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch149', 'label': 'Archetype:\nSpirometry test additional information\n...\nCLUSTER.spirometry_test_additional_information.v0', 'title': 'Spirometry test additional information\nopenEHR-EHR-CLUSTER.spirometry_test_additional_information.v0\ncid: 1380.146.276\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:52:37+01:00\nmodificationTime: 2024-11-14T14:52:37+01:00\nuid: bd0321ae-ce9e-45d2-af34-d03d565b041f', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch150', 'label': 'Archetype:\nAge\n...\nOBSERVATION.age.v0', 'title': 'Age\nopenEHR-EHR-OBSERVATION.age.v0\ncid: 1380.146.277\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:52:37+01:00\nmodificationTime: 2024-11-14T14:52:37+01:00\nuid: dd9b21f6-f80e-4aa9-9898-ca4415c661d1', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch151', 'label': 'Archetype:\nSpirometry result - CatSalut - HC3\n...\nOBSERVATION.spirometry_result-CatSalut-HC3.v3', 'title': 'Spirometry result - CatSalut - HC3\nopenEHR-EHR-OBSERVATION.spirometry_result-CatSalut-HC3.v3\ncid: 1380.146.278\nproject: HC3\nstatus: DRAFT\nrevision: 3.0.0-alpha\nrevisionLatest: 3.0.0-alpha\ncreationTime: 2024-11-14T14:52:39+01:00\nmodificationTime: 2024-11-14T14:52:39+01:00\nuid: 0870af76-1967-4723-b5e0-973d67a9265e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch152', 'label': 'Archetype:\nTobacco Use\n...\nOBSERVATION.tobacco_use.v0', 'title': 'Tobacco Use\nopenEHR-EHR-OBSERVATION.tobacco_use.v0\ncid: 1380.146.279\nproject: HC3\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-14T14:52:39+01:00\nmodificationTime: 2024-11-14T14:52:39+01:00\nuid: aa864d9c-40c0-489b-be32-f7b24af099c0', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch153', 'label': 'Archetype:\nECOG performance status\n...\nOBSERVATION.ecog.v1', 'title': 'ECOG performance status\nopenEHR-EHR-OBSERVATION.ecog.v1\ncid: 1380.146.287\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-11-22T11:11:38+01:00\nmodificationTime: 2024-11-22T11:11:38+01:00\nuid: 800383fa-4560-47d7-9720-3d6e45273f4e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch154', 'label': 'Archetype:\nExamination of a breast\n...\nCLUSTER.exam-breast.v0', 'title': 'Examination of a breast\nopenEHR-EHR-CLUSTER.exam-breast.v0\ncid: 1380.146.288\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-22T11:15:45+01:00\nmodificationTime: 2024-11-22T11:15:45+01:00\nuid: c1a0a1c4-9578-445a-a2f1-86618d12c53a', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch155', 'label': 'Archetype:\nTumor classification ICD-O\n...\nCLUSTER.tumor_icdo.v0', 'title': 'Tumor classification ICD-O\nopenEHR-EHR-CLUSTER.tumor_icdo.v0\ncid: 1380.146.289\nproject: Arquetips remots HighMED\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-22T11:20:33+01:00\nmodificationTime: 2024-11-22T11:20:33+01:00\nuid: 5d4d620e-029d-4245-bff0-9517762f6d65', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch156', 'label': 'Archetype:\nLymph node metastases\n...\nCLUSTER.lymph_node_metastases.v0', 'title': 'Lymph node metastases\nopenEHR-EHR-CLUSTER.lymph_node_metastases.v0\ncid: 1380.146.290\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-22T11:23:54+01:00\nmodificationTime: 2024-11-22T11:23:54+01:00\nuid: f76df12a-08bd-4a73-be4c-bf7176001072', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch157', 'label': 'Archetype:\nPhysical examination findings\n...\nCLUSTER.exam.v2', 'title': 'Physical examination findings\nopenEHR-EHR-CLUSTER.exam.v2\ncid: 1380.146.291\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 2.1.1\nrevisionLatest: 2.1.1\ncreationTime: 2024-11-22T11:34:35+01:00\nmodificationTime: 2024-11-22T11:34:35+01:00\nuid: 7bed0e4b-3603-4a0a-8f20-75b80d81be9b', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch158', 'label': 'Archetype:\nDetalls addicionals reacció adversa\n...\nCLUSTER.adverse_reaction_additional_details.v0', 'title': 'Detalls addicionals reacció adversa\nopenEHR-EHR-CLUSTER.adverse_reaction_additional_details.v0\ncid: 1380.146.294\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-25T10:50:27+01:00\nmodificationTime: 2024-11-25T11:59:52+01:00\nuid: d5dadb5c-f5d2-4a6b-94a0-2e6cb89a9b81', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch159', 'label': 'Archetype:\nDetalls notificació Farmacovigilancia\n...\nCLUSTER.pharmacovigilance_notification_details.v0', 'title': 'Detalls notificació Farmacovigilancia\nopenEHR-EHR-CLUSTER.pharmacovigilance_notification_details.v0\ncid: 1380.146.296\nproject: Al·lèrgies i Reaccions adverses (AiR)\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-25T11:16:12+01:00\nmodificationTime: 2024-11-25T11:16:12+01:00\nuid: 72f7700d-38ea-415b-83c8-80a9309f74a8', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch160', 'label': 'Archetype:\nTransfusion\n...\nACTION.blood_transfusion_management.v0', 'title': 'Transfusion\nopenEHR-EHR-ACTION.blood_transfusion_management.v0\ncid: 1380.146.300\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-26T15:36:54+01:00\nmodificationTime: 2024-11-26T15:36:54+01:00\nuid: d5a7d55c-1336-436d-8cd3-cdd755e45c55', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch161', 'label': 'Archetype:\nMedication supply amount\n...\nCLUSTER.medication_supply_amount.v0', 'title': 'Medication supply amount\nopenEHR-EHR-CLUSTER.medication_supply_amount.v0\ncid: 1380.146.301\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-26T15:36:56+01:00\nmodificationTime: 2024-11-26T15:36:56+01:00\nuid: 365f8abf-be21-43e8-bb00-f053ca88947a', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch162', 'label': 'Archetype:\nAutotransfusion\n...\nCLUSTER.autotransfusion_.v0', 'title': 'Autotransfusion\nopenEHR-EHR-CLUSTER.autotransfusion_.v0\ncid: 1380.146.302\nproject: Banc de Sang i Teixits\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-26T15:37:30+01:00\nmodificationTime: 2024-11-26T15:37:30+01:00\nuid: 9e759959-f7c1-43cc-8875-baa7dc7b7be4', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch163', 'label': 'Archetype:\nHealth summary\n...\nCOMPOSITION.health_summary.v1', 'title': 'Health summary\nopenEHR-EHR-COMPOSITION.health_summary.v1\ncid: 1380.146.305\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.0.2\nrevisionLatest: 1.0.2\ncreationTime: 2024-11-28T11:24:11+01:00\nmodificationTime: 2024-11-28T11:24:11+01:00\nuid: aab23408-3f8d-4bc8-b214-34af97e9abbd', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch164', 'label': 'Archetype:\nPrecaution\n...\nEVALUATION.precaution.v1', 'title': 'Precaution\nopenEHR-EHR-EVALUATION.precaution.v1\ncid: 1380.146.306\nproject: Arquetips remots (internacional)\nstatus: PUBLISHED\nrevision: 1.1.0\nrevisionLatest: 1.1.0\ncreationTime: 2024-11-28T11:24:13+01:00\nmodificationTime: 2024-11-28T11:24:13+01:00\nuid: 8e02deb2-7500-4703-81a3-e2bfb22c4bc2', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch165', 'label': 'Archetype:\nCitation\n...\nCLUSTER.citation.v0', 'title': 'Citation\nopenEHR-EHR-CLUSTER.citation.v0\ncid: 1380.146.307\nproject: Arquetips remots (internacional)\nstatus: DRAFT\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-11-28T11:24:14+01:00\nmodificationTime: 2024-11-28T11:24:14+01:00\nuid: 99717f0b-2adc-42b1-bfd1-a1fd58b9d32e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch166', 'label': 'Archetype:\nevaluation_note\n...\nEVALUATION.evaluation_note.v0', 'title': 'evaluation_note\nopenEHR-EHR-EVALUATION.evaluation_note.v0\ncid: 1380.146.345\nproject: Curs Clínic\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-12-03T13:38:02+01:00\nmodificationTime: 2024-12-03T13:58:53+01:00\nuid: 3bd31159-920c-446e-b25e-0145e9472028', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'arch167', 'label': 'Archetype:\nMedi del curs clínic\n...\nCLUSTER.clinical_note_mode.v0', 'title': 'Medi del curs clínic\nopenEHR-EHR-CLUSTER.clinical_note_mode.v0\ncid: 1380.146.346\nproject: Curs Clínic\nstatus: INITIAL\nrevision: 0.0.1-alpha\nrevisionLatest: 0.0.1-alpha\ncreationTime: 2024-12-03T13:51:04+01:00\nmodificationTime: 2024-12-03T14:00:25+01:00\nuid: 938623b7-1de4-4009-ac4f-85fc0c98a93e', 'group':'ARCHETYPE', color: {background: '#5EB6E5', border: '#00375F', highlight: {background: '#BDE3F6', border: '#D93E3E'}}},
+ {'id': 'temp0', 'label': 'Template:\nHC3 Immunization List v0.5', 'title': 'HC3 Immunization List v0.5\ncid: 1380.167.114\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-03-12T08:35:53+01:00\nmodificationTime: 2024-11-14T13:41:41+01:00\nresourceMainId: 3806c87e-40c6-4c85-9b7d-c128dc6de19e', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp1', 'label': 'Template:\nhc3_clinical_course_v0.3', 'title': 'hc3_clinical_course_v0.3\ncid: 1380.167.117\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-04-22T10:52:27+02:00\nmodificationTime: 2024-04-22T10:52:27+02:00\nresourceMainId: e0cc9981-4175-4ef1-ad64-abe05bc14883', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp2', 'label': 'Template:\nhc3_diagnosis_list_v0.3', 'title': 'hc3_diagnosis_list_v0.3\ncid: 1380.167.118\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-04-22T15:24:06+02:00\nmodificationTime: 2024-04-22T15:24:06+02:00\nresourceMainId: dd885173-756e-41dc-a892-bdeb7b7517cd', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp3', 'label': 'Template:\ninmunization_e2e_v0.1', 'title': 'inmunization_e2e_v0.1\ncid: 1380.167.126\nproject: Immunitzacions E2E\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-05-07T12:12:00+02:00\nmodificationTime: 2024-05-07T12:12:00+02:00\nresourceMainId: 8334d66c-7f33-4aaf-8a6a-c2dc658d8edb', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp4', 'label': 'Template:\nProcesses_v0.1', 'title': 'Processes_v0.1\ncid: 1380.167.127\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-06-03T11:10:30+02:00\nmodificationTime: 2024-06-03T11:10:30+02:00\nresourceMainId: d754bf30-af91-4dc5-8dba-b325871720e4', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp5', 'label': 'Template:\nPO Attention to the fetus during the labour v0.1', 'title': 'PO Attention to the fetus during the labour v0.1\ncid: 1380.167.128\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-06-03T12:47:53+02:00\nmodificationTime: 2024-06-03T12:47:53+02:00\nresourceMainId: 53fc5f9c-2f2b-4aae-b897-d05399d117a1', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp6', 'label': 'Template:\nAiR_Registre_Alergies v0.4', 'title': 'AiR_Registre_Alergies v0.4\ncid: 1380.167.129\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-06-17T10:23:25+02:00\nmodificationTime: 2024-06-17T10:23:25+02:00\nresourceMainId: e1a2fb37-f656-4081-aa86-821a918713c9', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp7', 'label': 'Template:\nAiR_Registre_Reaccions_Adverses v0.4', 'title': 'AiR_Registre_Reaccions_Adverses v0.4\ncid: 1380.167.131\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-06-17T10:26:36+02:00\nmodificationTime: 2024-06-17T10:26:36+02:00\nresourceMainId: 48a0e591-5d5f-4c3b-a2f9-0c922c5e0005', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp8', 'label': 'Template:\nAiR_Adverse_Reaction_Record v0.5', 'title': 'AiR_Adverse_Reaction_Record v0.5\ncid: 1380.167.142\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-07-26T08:29:02+02:00\nmodificationTime: 2024-08-05T14:54:42+02:00\nresourceMainId: 1bc1f395-2076-4442-a66d-b399f7b39b93', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp9', 'label': 'Template:\nAiR_Adverse_Reaction_Record_v0.6', 'title': 'AiR_Adverse_Reaction_Record_v0.6\ncid: 1380.167.155\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-08-13T12:43:05+02:00\nmodificationTime: 2024-08-14T10:51:16+02:00\nresourceMainId: a6b467b8-dfc2-4d8e-ab98-1fcf709353e7', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp10', 'label': 'Template:\nCurs_clinic', 'title': 'Curs_clinic\ncid: 1380.167.157\nproject: Curs Clínic\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-09-03T10:47:03+02:00\nmodificationTime: 2024-09-03T10:47:03+02:00\nresourceMainId: 2c5d123c-5919-4502-89bd-a66441d6cf44', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp11', 'label': 'Template:\nAiR_Adverse_Reaction_Record_v0.6b', 'title': 'AiR_Adverse_Reaction_Record_v0.6b\ncid: 1380.167.158\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-09-04T11:48:13+02:00\nmodificationTime: 2024-09-20T11:15:38+02:00\nresourceMainId: 09a813c0-147f-479a-9b34-14a91650bdc4', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp12', 'label': 'Template:\nAiR_Adverse_Reaction_Record_v0.7', 'title': 'AiR_Adverse_Reaction_Record_v0.7\ncid: 1380.167.169\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-10-02T09:22:02+02:00\nmodificationTime: 2024-10-02T09:51:40+02:00\nresourceMainId: 4a1f356f-6aca-4e44-8acd-2b47ef31be9a', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp13', 'label': 'Template:\nAiR_Adverse_Reaction_Record_v0.7.2', 'title': 'AiR_Adverse_Reaction_Record_v0.7.2\ncid: 1380.167.173\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-10-07T15:39:11+02:00\nmodificationTime: 2024-10-07T15:39:11+02:00\nresourceMainId: 5790d19f-9b8b-4b63-8407-a36b8ef658c6', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp14', 'label': 'Template:\nAiR_known_allergies_v0.1', 'title': 'AiR_known_allergies_v0.1\ncid: 1380.167.174\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-10-25T09:12:54+02:00\nmodificationTime: 2024-10-25T09:12:54+02:00\nresourceMainId: 1e5f68ba-7b97-46a2-89a1-420ef8f7b964', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp15', 'label': 'Template:\nAiR_known_allergies_v0.2', 'title': 'AiR_known_allergies_v0.2\ncid: 1380.167.175\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-10-25T11:04:26+02:00\nmodificationTime: 2024-10-25T11:04:26+02:00\nresourceMainId: 46ff05b4-a218-4abd-ba10-d2ddf6bac800', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp16', 'label': 'Template:\nCondicionants_Problemes_Diagnostics', 'title': 'Condicionants_Problemes_Diagnostics\ncid: 1380.167.176\nproject: Condicionants i Problemes\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-10-28T16:08:01+01:00\nmodificationTime: 2024-10-28T16:08:01+01:00\nresourceMainId: 757e66fd-a24d-40da-af79-8130b23a5e8e', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp17', 'label': 'Template:\nPO_Attention_to_the_mother_during_labour_v0.16_FORMULARIS', 'title': 'PO_Attention_to_the_mother_during_labour_v0.16_FORMULARIS\ncid: 1380.167.243\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-12T08:23:03+01:00\nmodificationTime: 2024-12-13T08:50:07+01:00\nresourceMainId: 38605b8b-15dc-4eb1-85a7-be7f1588381f', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp18', 'label': 'Template:\nPO_Care_of_newborn_and_fetus_1-n_during_childbirth_v0.8_FORMULARIS', 'title': 'PO_Care_of_newborn_and_fetus_1-n_during_childbirth_v0.8_FORMULARIS\ncid: 1380.167.244\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-12T10:16:17+01:00\nmodificationTime: 2024-12-09T13:11:14+01:00\nresourceMainId: bd1f882f-49cb-4326-be88-6fb911571c1f', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp19', 'label': 'Template:\nPO_Foetus_pregnancy_follow_up_v0.14_FORMULARIS', 'title': 'PO_Foetus_pregnancy_follow_up_v0.14_FORMULARIS\ncid: 1380.167.245\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-12T10:18:58+01:00\nmodificationTime: 2024-12-13T09:07:04+01:00\nresourceMainId: 591334a4-0db3-41b8-9044-25e7fc0f1d30', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp20', 'label': 'Template:\nPO_Pregnancy_End_v0.8_FORMULARIS', 'title': 'PO_Pregnancy_End_v0.8_FORMULARIS\ncid: 1380.167.246\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-12T10:25:42+01:00\nmodificationTime: 2024-12-13T09:40:03+01:00\nresourceMainId: d793e8f8-11e5-4cf2-a767-a7b456dcde80', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp21', 'label': 'Template:\nPO_Pregnancy_onset_and mother_follow_up_v.0.10_FORMULARIS', 'title': 'PO_Pregnancy_onset_and mother_follow_up_v.0.10_FORMULARIS\ncid: 1380.167.247\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-12T10:34:49+01:00\nmodificationTime: 2024-12-13T09:40:41+01:00\nresourceMainId: b4f902b1-0b77-43f8-a0fd-cd57ea2d0998', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp22', 'label': 'Template:\nPO_Mothers_Puerperium_v0.17_FORMULARIS', 'title': 'PO_Mothers_Puerperium_v0.17_FORMULARIS\ncid: 1380.167.248\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-12T10:45:02+01:00\nmodificationTime: 2024-12-13T09:09:08+01:00\nresourceMainId: a989f371-ab8a-474f-982f-6a1a07e74e1e', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp23', 'label': 'Template:\nhc3_anatomical_pathology_test_result_v0.2', 'title': 'hc3_anatomical_pathology_test_result_v0.2\ncid: 1380.167.252\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T13:07:36+01:00\nmodificationTime: 2024-11-14T13:07:36+01:00\nresourceMainId: 9a4c6c09-28fb-4e65-b87f-0935a2f3f5e8', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp24', 'label': 'Template:\nhc3_appointments_v0.1', 'title': 'hc3_appointments_v0.1\ncid: 1380.167.253\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T13:11:33+01:00\nmodificationTime: 2024-11-14T13:11:33+01:00\nresourceMainId: 94314ef6-2982-4b14-9f3b-bfe8df6fa890', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp25', 'label': 'Template:\nhc3_cancer_screening_v0.5', 'title': 'hc3_cancer_screening_v0.5\ncid: 1380.167.254\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T13:20:31+01:00\nmodificationTime: 2024-11-14T13:20:31+01:00\nresourceMainId: 06570105-02ce-4605-807e-b0739bc8477e', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp26', 'label': 'Template:\nhc3_clinical_variables_and_scales_v0.4', 'title': 'hc3_clinical_variables_and_scales_v0.4\ncid: 1380.167.255\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T13:39:36+01:00\nmodificationTime: 2024-11-14T13:39:36+01:00\nresourceMainId: bf6b94fb-b6a2-4dd5-9b24-4db54a62d40a', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp27', 'label': 'Template:\nhc3_imaging_test_result_v0.4', 'title': 'hc3_imaging_test_result_v0.4\ncid: 1380.167.257\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T14:37:54+01:00\nmodificationTime: 2024-11-14T14:37:54+01:00\nresourceMainId: 8dbe13d6-3e11-4e48-951f-dd99d65bc5c0', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp28', 'label': 'Template:\nhc3_laboratory_v0.4', 'title': 'hc3_laboratory_v0.4\ncid: 1380.167.258\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T14:41:47+01:00\nmodificationTime: 2024-11-14T14:41:47+01:00\nresourceMainId: 77226f7c-ca9d-49cf-97d2-d59094706523', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp29', 'label': 'Template:\nhc3_patient_context_v0.1', 'title': 'hc3_patient_context_v0.1\ncid: 1380.167.259\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T14:45:24+01:00\nmodificationTime: 2024-11-14T14:45:24+01:00\nresourceMainId: 36d96775-e449-4be2-bfb8-d6b8ba4fb876', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp30', 'label': 'Template:\nhc3_reports_v0.2', 'title': 'hc3_reports_v0.2\ncid: 1380.167.260\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T14:46:58+01:00\nmodificationTime: 2024-11-14T14:46:58+01:00\nresourceMainId: 987df740-77af-41af-817a-0d4255f8cb91', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp31', 'label': 'Template:\nhc3_spirometry_test_result_v0.10', 'title': 'hc3_spirometry_test_result_v0.10\ncid: 1380.167.261\nproject: HC3\ntemplateType: NORMAL\nstatus: DRAFT\ncreationTime: 2024-11-14T14:54:13+01:00\nmodificationTime: 2024-11-14T14:54:13+01:00\nresourceMainId: 6d019bc8-57b3-4f1c-8c2c-a238b9a6e8cb', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp32', 'label': 'Template:\nPO_Newborn_Puerperium_v0.20_FORMULARIS', 'title': 'PO_Newborn_Puerperium_v0.20_FORMULARIS\ncid: 1380.167.262\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-15T08:26:44+01:00\nmodificationTime: 2024-12-13T12:29:50+01:00\nresourceMainId: 9e1a4871-ce9c-4da0-9bf4-33c7e9fcc512', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp33', 'label': 'Template:\nBST_Transfusion_v0.2', 'title': 'BST_Transfusion_v0.2\ncid: 1380.167.276\nproject: Banc de Sang i Teixits\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-11-26T15:39:35+01:00\nmodificationTime: 2024-11-26T15:39:35+01:00\nresourceMainId: 7f034277-ab99-439d-90cc-0265262dc0fc', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp34', 'label': 'Template:\nAiR_Adverse_Reaction_Record_v0.7.3', 'title': 'AiR_Adverse_Reaction_Record_v0.7.3\ncid: 1380.167.283\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-12-02T12:34:03+01:00\nmodificationTime: 2024-12-02T12:34:03+01:00\nresourceMainId: 63a4f6c6-ec27-4c09-9961-f2907c905558', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp35', 'label': 'Template:\nair_adverse_reaction_record_v0.7.4', 'title': 'air_adverse_reaction_record_v0.7.4\ncid: 1380.167.284\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-12-02T12:34:23+01:00\nmodificationTime: 2024-12-04T10:34:53+01:00\nresourceMainId: 74d6770d-c04f-4fad-9eb5-d3acd851641e', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp36', 'label': 'Template:\nair_known_allergies_v0.3', 'title': 'air_known_allergies_v0.3\ncid: 1380.167.285\nproject: Al·lèrgies i Reaccions adverses (AiR)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-12-02T12:35:35+01:00\nmodificationTime: 2024-12-02T12:35:35+01:00\nresourceMainId: 1f22aafa-103a-4067-b1f4-2f3a94934210', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp37', 'label': 'Template:\nPO_Obstetric_process_v0.6_FORMULARIS', 'title': 'PO_Obstetric_process_v0.6_FORMULARIS\ncid: 1380.167.292\nproject: Procés Obstètric (PROBS)\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-12-02T17:36:47+01:00\nmodificationTime: 2024-12-13T09:39:02+01:00\nresourceMainId: 0088c992-f027-4ada-b318-1ea898eb67b5', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}},
+ {'id': 'temp38', 'label': 'Template:\nCurs_clinic_v0.1', 'title': 'Curs_clinic_v0.1\ncid: 1380.167.304\nproject: Curs Clínic\ntemplateType: NORMAL\nstatus: INITIAL\ncreationTime: 2024-12-04T07:50:47+01:00\nmodificationTime: 2024-12-12T07:53:27+01:00\nresourceMainId: 16ff5738-6e14-4ea0-ab71-98f028bfbac2', 'group':'TEMPLATE', color: {background: '#FDB322', border: '#391B00', highlight: {background: '#FECA64', border: '#D93E3E'}}}]
+var edgesOrigin =
+[{'from': 'proj0', 'to': 'dom7', 'label': '', 'title': ''},
+ {'from': 'proj1', 'to': 'dom0', 'label': '', 'title': ''},
+ {'from': 'proj2', 'to': 'dom2', 'label': '', 'title': ''},
+ {'from': 'proj3', 'to': 'dom4', 'label': '', 'title': ''},
+ {'from': 'proj4', 'to': 'dom1', 'label': '', 'title': ''},
+ {'from': 'proj5', 'to': 'dom7', 'label': '', 'title': ''},
+ {'from': 'proj6', 'to': 'dom13', 'label': '', 'title': ''},
+ {'from': 'proj7', 'to': 'dom13', 'label': '', 'title': ''},
+ {'from': 'proj8', 'to': 'dom5', 'label': '', 'title': ''},
+ {'from': 'proj9', 'to': 'dom6', 'label': '', 'title': ''},
+ {'from': 'proj10', 'to': 'dom7', 'label': '', 'title': ''},
+ {'from': 'proj11', 'to': 'dom8', 'label': '', 'title': ''},
+ {'from': 'proj12', 'to': 'dom12', 'label': '', 'title': ''},
+ {'from': 'arch0', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch1', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch2', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch3', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch4', 'to': 'proj0', 'label': '', 'title': ''},
+ {'from': 'arch5', 'to': 'proj0', 'label': '', 'title': ''},
+ {'from': 'arch6', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch7', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch8', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch9', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch10', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch11', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch12', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch13', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch14', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch15', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch16', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch17', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch18', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch19', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch20', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch21', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch22', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch23', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch24', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch25', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch26', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch27', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch28', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch29', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch30', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch31', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch32', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch33', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch34', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch35', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch36', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch37', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch38', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch39', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch40', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch41', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch42', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch43', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch44', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch45', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch46', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch47', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch48', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch49', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch50', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch51', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch52', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch53', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch54', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch55', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch56', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch57', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch58', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch59', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch60', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch61', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch62', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch63', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch64', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch65', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch66', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch67', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch68', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch69', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch70', 'to': 'proj3', 'label': '', 'title': ''},
+ {'from': 'arch71', 'to': 'proj3', 'label': '', 'title': ''},
+ {'from': 'arch72', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch73', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch74', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch75', 'to': 'proj5', 'label': '', 'title': ''},
+ {'from': 'arch76', 'to': 'proj0', 'label': '', 'title': ''},
+ {'from': 'arch77', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch78', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch79', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch80', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch81', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch82', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch83', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch84', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch85', 'to': 'proj7', 'label': '', 'title': ''},
+ {'from': 'arch86', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch87', 'to': 'proj6', 'label': '', 'title': ''},
+ {'from': 'arch88', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch89', 'to': 'proj6', 'label': '', 'title': ''},
+ {'from': 'arch90', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch91', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch92', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch93', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch94', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch95', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch96', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch97', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch98', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch99', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch100', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch101', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch102', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch103', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch104', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch105', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch106', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch107', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch108', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch109', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch110', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch111', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch112', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch113', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch114', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch115', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch116', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch117', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch118', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch119', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch120', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch121', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch122', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch123', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch124', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch125', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch126', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch127', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch128', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch129', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'arch130', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch131', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch132', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch133', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch134', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch135', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch136', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch137', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch138', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch139', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch140', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch141', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch142', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch143', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch144', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch145', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch146', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch147', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch148', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch149', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch150', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch151', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch152', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'arch153', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch154', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch155', 'to': 'proj3', 'label': '', 'title': ''},
+ {'from': 'arch156', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch157', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch158', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch159', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'arch160', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch161', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch162', 'to': 'proj4', 'label': '', 'title': ''},
+ {'from': 'arch163', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch164', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch165', 'to': 'proj2', 'label': '', 'title': ''},
+ {'from': 'arch166', 'to': 'proj7', 'label': '', 'title': ''},
+ {'from': 'arch167', 'to': 'proj7', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'proj9', 'label': '', 'title': ''},
+ {'from': 'temp4', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'proj7', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'proj6', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp24', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp29', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'proj8', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'proj4', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'proj1', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'proj12', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'proj7', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'arch1', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'arch3', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'arch0', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp0', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch22', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch27', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch25', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch21', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch20', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch28', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch29', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch24', 'label': '', 'title': ''},
+ {'from': 'temp1', 'to': 'arch26', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch31', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch26', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch25', 'label': '', 'title': ''},
+ {'from': 'temp2', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'arch1', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'arch0', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'arch3', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp3', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp4', 'to': 'arch32', 'label': '', 'title': ''},
+ {'from': 'temp4', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp4', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp4', 'to': 'arch33', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch37', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch34', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch36', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch38', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch39', 'label': '', 'title': ''},
+ {'from': 'temp5', 'to': 'arch35', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch7', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch1', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch11', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch9', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp6', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch1', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch7', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch11', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp7', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch81', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch9', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch7', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch75', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch80', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp8', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch9', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch75', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch7', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch81', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp9', 'to': 'arch80', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch22', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch43', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch75', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch29', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch28', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch85', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch21', 'label': '', 'title': ''},
+ {'from': 'temp10', 'to': 'arch83', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch75', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch80', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch81', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch7', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp11', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch81', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch84', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch80', 'label': '', 'title': ''},
+ {'from': 'temp12', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch80', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch81', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch84', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp13', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch9', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp14', 'to': 'arch16', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch16', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch88', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp15', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch87', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch86', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch84', 'label': '', 'title': ''},
+ {'from': 'temp16', 'to': 'arch89', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch96', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch98', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch100', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch101', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch99', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp17', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch105', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch104', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch103', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp18', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch106', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp19', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch107', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp20', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch109', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch113', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch115', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch116', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch110', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch108', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch112', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch120', 'label': '', 'title': ''},
+ {'from': 'temp21', 'to': 'arch111', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch117', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch122', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch119', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch124', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch126', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch121', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch120', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch127', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch123', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch110', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch125', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp22', 'to': 'arch118', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch66', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch44', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch130', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch63', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch54', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch26', 'label': '', 'title': ''},
+ {'from': 'temp23', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp24', 'to': 'arch132', 'label': '', 'title': ''},
+ {'from': 'temp24', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp24', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp24', 'to': 'arch131', 'label': '', 'title': ''},
+ {'from': 'temp24', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch26', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch136', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch133', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch134', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch21', 'label': '', 'title': ''},
+ {'from': 'temp25', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch138', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch56', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch137', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp26', 'to': 'arch139', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'arch59', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'arch26', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'arch73', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp27', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch140', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch51', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch25', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch21', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch54', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch66', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch141', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch63', 'label': '', 'title': ''},
+ {'from': 'temp28', 'to': 'arch24', 'label': '', 'title': ''},
+ {'from': 'temp29', 'to': 'arch143', 'label': '', 'title': ''},
+ {'from': 'temp29', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp29', 'to': 'arch142', 'label': '', 'title': ''},
+ {'from': 'temp29', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'arch59', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'arch26', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp30', 'to': 'arch44', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch69', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch144', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch152', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch150', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch146', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch145', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch151', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch148', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch147', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch21', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch63', 'label': '', 'title': ''},
+ {'from': 'temp31', 'to': 'arch149', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch129', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch128', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp32', 'to': 'arch97', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch161', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch27', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch160', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch30', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch46', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp33', 'to': 'arch162', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch80', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch84', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch81', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp34', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch2', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch57', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch159', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch17', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch50', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch15', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch10', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch18', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch14', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch158', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch42', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch76', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch84', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch13', 'label': '', 'title': ''},
+ {'from': 'temp35', 'to': 'arch52', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch16', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch8', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch88', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch77', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch12', 'label': '', 'title': ''},
+ {'from': 'temp36', 'to': 'arch19', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch91', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch95', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch94', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch93', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch92', 'label': '', 'title': ''},
+ {'from': 'temp37', 'to': 'arch90', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch75', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch167', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch85', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch166', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch23', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch22', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch4', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch83', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch5', 'label': '', 'title': ''},
+ {'from': 'temp38', 'to': 'arch43', 'label': '', 'title': ''}]
+		nodesOrigin.sort((a, b) => a.title.localeCompare(b.title));
+		var container = document.getElementById('network');
+		
+		var nodes = new vis.DataSet(nodesOrigin); 
+		var edges = new vis.DataSet(edgesOrigin);
+		
+
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+
+        var network = new vis.Network(container, data, options);
+		
+		        // Store the initial colors of the nodes
+        var initialColors = {};
+        nodes.forEach(node => {
+            initialColors[node.id] = node.color;
+        });
+				
+		var projectSelect = document.getElementById('projectSelect');
+        nodesOrigin.forEach(function(node) {
+            if (node.group === 'PROJECT') {
+                var option = document.createElement('option');
+                option.value = node.id;
+				//option.text = node.label;
+                option.text = node.label.replace('PROJECT:', '');
+				option.text = option.text.replace('INCUBATOR:', '').substring(0, 40);
+                projectSelect.add(option);
+            }
+        });
+		
+		// Add an event listener to the selection box
+        projectSelect.addEventListener('change', function() {
+            var selectedProjectId = this.value;
+			resetOtherFields('projectSelect');
+			resetNodeColors() ;
+            // Highlight the selected project
+            if (selectedProjectId) {
+                var selectedNode = data.nodes.get(selectedProjectId);
+                selectedNode.color = {background: '#FFFF00', border: '#FF0000'};
+                data.nodes.update(selectedNode);
+                network.focus(selectedProjectId, {
+                    scale: 0.5,
+                    animation: {
+                        duration: 1000,
+                        easingFunction: 'easeInOutQuad'
+                    }
+                });
+            }
+        });
+		
+	    var domainSelect = document.getElementById('domainSelect');
+        nodesOrigin.forEach(function(node) {
+            if (node.group === 'DOMAIN') {
+                var option = document.createElement('option');
+                option.value = node.id;
+				//option.text = node.label;
+                option.text = node.label.replace('Subdomain:', '').substring(0, 40);
+				//option.text = option.text.replace('INCUBATOR:', '');
+                domainSelect.add(option);
+            }
+        });
+		
+		// Add an event listener to the selection box
+        domainSelect.addEventListener('change', function() {
+            var selectedDomainId = this.value;
+			resetOtherFields('domainSelect');
+			resetNodeColors() ;
+            // Highlight the selected project
+            if (selectedDomainId) {
+                var selectedNode = data.nodes.get(selectedDomainId);
+                selectedNode.color = {background: '#FFFF00', border: '#FF0000'};
+                data.nodes.update(selectedNode);
+                network.focus(selectedDomainId, {
+                    scale: 0.5,
+                    animation: {
+                        duration: 2000,
+                        easingFunction: 'easeInOutQuad'
+                    }
+                });
+            }
+        });
+		
+		
+		
+		var templateSelect = document.getElementById('templateSelect');
+        nodesOrigin.forEach(function(node) {
+            if (node.group === 'TEMPLATE') {
+                var option = document.createElement('option');
+                option.value = node.id;
+				//option.text = node.label;
+                option.text = node.label.replace('Template:', '').substring(0, 40);
+				//option.text = option.text.replace('INCUBATOR:', '');
+                templateSelect.add(option);
+            }
+        });
+		
+		// Add an event listener to the selection box
+        templateSelect.addEventListener('change', function() {
+            var selectedTemplateId = this.value;
+			resetOtherFields('templateSelect');
+			resetNodeColors() ;
+            // Highlight the selected project
+            if (selectedTemplateId) {
+                var selectedNode = data.nodes.get(selectedTemplateId);
+                selectedNode.color = {background: '#FFFF00', border: '#FF0000'};
+                data.nodes.update(selectedNode);
+                network.focus(selectedTemplateId, {
+                    scale: 0.5,
+                    animation: {
+                        duration: 2000,
+                        easingFunction: 'easeInOutQuad'
+                    }
+                });
+            }
+        });
+		
+		
+		var archetypeSelect = document.getElementById('archetypeSelect');
+        nodesOrigin.forEach(function(node) {
+            if (node.group === 'ARCHETYPE') {
+                var option = document.createElement('option');
+                option.value = node.id;
+				//option.text = node.label;
+                option.text = node.label.replace('Archetype:', '').substring(0, 40);
+				//option.text = option.text.replace('INCUBATOR:', '');
+                archetypeSelect.add(option);
+            }
+        });
+		
+		// Add an event listener to the selection box
+        archetypeSelect.addEventListener('change', function() {
+            var selectedArchetypeId = this.value;
+			resetOtherFields('archetypeSelect');
+			resetNodeColors() ;
+            // Highlight the selected project
+            if (selectedArchetypeId) {
+                var selectedNode = data.nodes.get(selectedArchetypeId);
+                selectedNode.color = {background: '#FFFF00', border: '#FF0000'};
+                data.nodes.update(selectedNode);
+                network.focus(selectedArchetypeId, {
+                    scale: 0.5,
+                    animation: {
+                        duration: 2000,
+                        easingFunction: 'easeInOutQuad'
+                    }
+                });
+            }
+        });
+		
+
+
+        // Function to update physics options
+        function updatePhysics() {
+            var repulsion = document.getElementById('repulsion').value;
+            var centralGravity = document.getElementById('centralGravity').value;
+			var springLength = document.getElementById('springLength').value;
+			var springConstant = document.getElementById('springConstant').value;
+		
+			var isPhysicsEnabled = document.getElementById('physicsToggle').checked;
+			
+
+			const repulsionValue = document.getElementById('repulsionValue');
+			const centralGravityValue = document.getElementById('centralGravityValue');
+			const springLengthValue = document.getElementById('springLengthValue');
+			const springConstantValue = document.getElementById('springConstantValue');
+    
+			// Update the displayed value
+			repulsionValue.textContent = repulsion;
+			centralGravityValue.textContent = centralGravity;
+			springLengthValue.textContent = springLength;
+			springConstantValue.textContent = springConstant;
+				
+            network.setOptions({
+                physics: {
+					enabled: isPhysicsEnabled,
+                    forceAtlas2Based: {
+						gravitationalConstant: repulsion,
+                        centralGravity: centralGravity,
+						springLength: springLength,
+						springConstant: springConstant
+                    },
+					solver: 'forceAtlas2Based',
+                }
+            });
+        }
+
+        // Toggle the configuration panel visibility
+        function toggleConfiguration() {
+            var configPanel = document.getElementById('configuration');
+            var networkDiv = document.getElementById('network');
+
+            if (configPanel.style.display === "none") {
+                configPanel.style.display = "block";
+                networkDiv.style.width = "calc(100% - 300px)";
+            } else {
+                configPanel.style.display = "none";
+                networkDiv.style.width = "100%";
+            }
+
+            network.redraw();
+        }
+
+        // Enable or disable physics based on checkbox state
+        function togglePhysics() {
+            var isPhysicsEnabled = document.getElementById('physicsToggle').checked;
+			document.getElementById('repulsion').disabled = !isPhysicsEnabled;
+			document.getElementById('centralGravity').disabled = !isPhysicsEnabled;
+			document.getElementById('springLength').disabled = !isPhysicsEnabled;
+			document.getElementById('springConstant').disabled = !isPhysicsEnabled;
+            network.setOptions({
+                physics: {
+                    enabled: isPhysicsEnabled
+                }
+            });
+        }
+		
+		// Enable or disable smooth edges
+        function toggleSmooth() {
+            var isSmoothEnabled = document.getElementById('smoothToggle').checked;
+            network.setOptions({
+                edges: {
+                    smooth: isSmoothEnabled
+                }
+            });
+        }
+
+        // Highlight connected nodes and dim others
+        network.on('click', function (params) {
+        resetALLFields();
+		if (params.nodes.length > 0) {
+			var selectedNodeId = params.nodes[0];
+			var connectedNodeIds = network.getConnectedNodes(selectedNodeId);
+
+			const updatedNodes = nodes.map(node => {
+				if (connectedNodeIds.includes(node.id) || node.id === selectedNodeId) {
+					return {
+						id: node.id,
+						color: initialColors[node.id]
+					};
+				} else {
+					return {
+						id: node.id,
+						color: {
+							background: '#d3d3d3',
+							border: "#d3d3d3",
+							highlight: {
+								background: "#d3d3d3",
+								border: "#d3d3d3"
+							}
+						}
+					};
+				}
+			});
+
+			nodes.update(updatedNodes);
+		} else{resetNodeColors();}
+		});
+
+		function resetNodeColors() {
+			network.selectNodes([]);
+			network.selectEdges([]);
+			const updatedNodes = nodes.map(node => ({
+				id: node.id,
+				color: initialColors[node.id]
+			}));
+			nodes.update(updatedNodes);
+		}
+
+        function resetALLFields() {
+            const dropdown1 = document.getElementById('domainSelect');
+            const dropdown2 = document.getElementById('projectSelect');
+			const dropdown3 = document.getElementById('templateSelect');
+			const dropdown4 = document.getElementById('archetypeSelect');
+            
+            // Reset all fields except the one that was changed
+			dropdown1.selectedIndex = 0;
+			dropdown2.selectedIndex = 0;
+			dropdown3.selectedIndex = 0;
+			dropdown4.selectedIndex = 0;
+        }
+
+        function resetOtherFields(changedDropdownId) {
+            const dropdown1 = document.getElementById('domainSelect');
+            const dropdown2 = document.getElementById('projectSelect');
+            const dropdown3 = document.getElementById('templateSelect');
+			const dropdown4 = document.getElementById('archetypeSelect');
+            
+            // Reset all fields except the one that was changed
+            if (changedDropdownId !== 'domainSelect') dropdown1.selectedIndex = 0;
+            if (changedDropdownId !== 'projectSelect') dropdown2.selectedIndex = 0;
+            if (changedDropdownId !== 'templateSelect') dropdown3.selectedIndex = 0;
+			if (changedDropdownId !== 'archetypeSelect') dropdown4.selectedIndex = 0;
+        }
+    </script>
+		
+    
+</body>
+</html>
+		
+		
+		
